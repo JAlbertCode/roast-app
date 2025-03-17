@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import SirCroaksworthSvg from './icons/SirCroaksworthSvg';
+import BetterSirCroaksworthSvg from './icons/BetterSirCroaksworthSvg';
 
 interface SirCroaksworthProps {
   isRoasting: boolean;
@@ -18,25 +18,27 @@ const SirCroaksworth: React.FC<SirCroaksworthProps> = ({
       rotate: 0
     },
     roasting: { 
-      scale: [1, 1.05, 1, 1.05, 1],
+      scale: [1, 1.03, 1, 1.03, 1],
       transition: { 
         repeat: Infinity,
-        duration: 1,
+        duration: 1.5,
       }
     },
     wealthy: {
       scale: 1.05,
+      y: [0, -5, 0],
       transition: { 
-        yoyo: Infinity,
-        duration: 1.5 
+        repeat: Infinity,
+        duration: 2 
       }
     },
     poor: {
       rotate: [-2, 2],
+      x: [0, -2, 0, 2, 0],
       transition: { 
         repeat: Infinity,
-        repeatType: "reverse",
-        duration: 0.8
+        repeatType: "mirror",
+        duration: 1.2
       }
     }
   };
@@ -58,10 +60,11 @@ const SirCroaksworth: React.FC<SirCroaksworthProps> = ({
       transition: { delay: 0.5 }
     },
     pulse: {
-      scale: [1, 1.1, 1],
+      scale: [1, 1.15, 1],
+      rotate: [0, 5, 0, -5, 0],
       transition: {
         repeat: Infinity,
-        duration: 1
+        duration: 1.5
       }
     }
   };
@@ -76,11 +79,12 @@ const SirCroaksworth: React.FC<SirCroaksworthProps> = ({
       transition: { delay: 0.5 }
     },
     float: {
-      y: [0, -5, 0],
+      y: [0, -8, 0],
       rotate: [-5, 5, -5],
       transition: {
         repeat: Infinity,
-        duration: 2
+        duration: 2,
+        ease: "easeInOut"
       }
     }
   };
@@ -93,29 +97,31 @@ const SirCroaksworth: React.FC<SirCroaksworthProps> = ({
         initial="idle"
         animate={getAnimationState()}
       >
-        <SirCroaksworthSvg className="w-full h-full" />
+        <BetterSirCroaksworthSvg className="w-full h-full" />
         
         {/* Money bags for wealthy users */}
         {walletSize === 'wealthy' && (
           <motion.div 
-            className="absolute bottom-2 right-2 bg-yellow-400 p-2 rounded-full"
+            className="absolute bottom-5 right-0 bg-yellow-400 p-3 rounded-full shadow-lg"
             variants={moneyBagVariants}
             initial="initial"
             animate={["animate", "pulse"]}
+            aria-label="Money bag indicating wealthy wallet"
           >
-            💰
+            <span className="text-2xl">💰</span>
           </motion.div>
         )}
         
         {/* Broke symbol for poor users */}
         {walletSize === 'poor' && (
           <motion.div 
-            className="absolute bottom-2 right-2 bg-red-400 p-2 rounded-full"
+            className="absolute bottom-5 right-0 bg-red-400 p-3 rounded-full shadow-lg"
             variants={brokeVariants}
             initial="initial"
             animate={["animate", "float"]}
+            aria-label="Empty wallet indicating poor wallet"
           >
-            💸
+            <span className="text-2xl">💸</span>
           </motion.div>
         )}
       </motion.div>

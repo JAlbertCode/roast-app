@@ -99,8 +99,15 @@ export default function Home() {
       </header>
       
       <main className="flex flex-col items-center w-full max-w-3xl">
-        <div className="mb-6">
-          <SirCroaksworth isRoasting={isRoasting} walletSize={walletSize} />
+        <div className="mb-8">
+          <motion.div 
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            className="w-72 h-72 sm:w-80 sm:h-80"
+          >
+            <SirCroaksworth isRoasting={isRoasting} walletSize={walletSize} />
+          </motion.div>
         </div>
         
         <div className="w-full max-w-xl mb-6 sm:mb-8">

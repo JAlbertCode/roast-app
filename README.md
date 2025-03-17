@@ -48,10 +48,17 @@ A decentralized application where Sir Croaksworth, the frog banker, roasts users
 - Updated UI to indicate multi-chain support
 - Enhanced roast generation with cross-chain data
 
+### Commit 8: Enhanced Sir Croaksworth Character
+- Created a better frog banker SVG with more details
+- Improved animations with smoother transitions
+- Added enhanced icons for wallet status indicators
+- Resized and repositioned Sir Croaksworth for better visibility
+- Added accessibility labels for screen readers
+
 ### Next Steps:
-- Improve Sir Croaksworth's visual appearance
 - Add unit tests
 - Deploy to Vercel
+- Add loading animations for better UX
 
 ## Getting Started
 
