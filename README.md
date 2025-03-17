@@ -41,11 +41,17 @@ A decentralized application where Sir Croaksworth, the frog banker, roasts users
 - Enhanced UI for dark mode
 - Updated metadata and app title
 
+### Commit 7: Multi-Chain Support Without Selection
+- Removed chain selector for better UX
+- Implemented automatic scanning of all configured chains
+- Created aggregated data model for comprehensive transaction summary
+- Updated UI to indicate multi-chain support
+- Enhanced roast generation with cross-chain data
+
 ### Next Steps:
+- Improve Sir Croaksworth's visual appearance
 - Add unit tests
 - Deploy to Vercel
-- Implement error handling for missing API keys
-- Add loading animations
 
 ## Getting Started
 

@@ -4,14 +4,11 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SirCroaksworth from './components/SirCroaksworth';
 import SpeechBubble from './components/SpeechBubble';
-import ChainSelector from './components/ChainSelector';
 import DarkModeToggle from './components/DarkModeToggle';
 import { TransactionSummary } from './utils/etherscanService';
-import { ChainId } from './utils/chains/types';
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string>('');
-  const [selectedChain, setSelectedChain] = useState<ChainId>('ethereum');
   const [isRoasting, setIsRoasting] = useState<boolean>(false);
   const [roastText, setRoastText] = useState<string>("Ribbit! Paste your wallet address and I'll roast your financial decisions like they're flies on a lily pad!");
   const [walletSize, setWalletSize] = useState<'poor' | 'average' | 'wealthy'>('average');
@@ -30,19 +27,16 @@ export default function Home() {
 
     // Start the roasting process
     setIsRoasting(true);
-    setRoastText("Hmm, let me check your transactions... *ribbit*");
+    setRoastText("Hmm, let me check your transactions across all blockchains... *ribbit*");
 
     try {
-      // Call our API endpoint with selected chain
+      // Call our multi-chain API endpoint
       const response = await fetch('/api/roast', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          walletAddress,
-          chainId: selectedChain 
-        }),
+        body: JSON.stringify({ walletAddress }),
       });
 
       if (!response.ok) {
@@ -144,20 +138,11 @@ export default function Home() {
           </div>
         )}
         
-        <div className="w-full max-w-xl mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Blockchain</label>
-          <ChainSelector 
-            selectedChain={selectedChain}
-            onChainSelect={setSelectedChain}
-            disabled={isRoasting}
-          />
-        </div>
-        
         <div className="w-full max-w-xl mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row gap-2">
             <input 
               type="text" 
-              placeholder="Paste your wallet address (0x...)" 
+              placeholder="Paste your wallet address (0x...) - We'll check all chains" 
               className="flex-grow p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-800 dark:text-white"
               value={walletAddress}
               onChange={(e) => setWalletAddress(e.target.value)}
@@ -173,7 +158,7 @@ export default function Home() {
               whileTap={!isRoasting ? "tap" : undefined}
               suppressHydrationWarning
             >
-              {isRoasting ? 'Analyzing...' : 'Roast Me!'}
+              {isRoasting ? 'Analyzing all chains...' : 'Roast Me!'}
             </motion.button>
           </div>
         </div>
