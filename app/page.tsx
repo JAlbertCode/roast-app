@@ -73,10 +73,23 @@ export default function Home() {
     }
     
     // Prepare the tweet text
-    const tweetText = `I just got my wallet roasted by Sir Croaksworth: "${roastText.slice(0, 180)}..." ${window.location.origin}\n\n#Lilypad #Roasted`;
+    const tweetText = `I just got my wallet roasted by Sir Croaksworth: "${roastText}" ${window.location.origin}\n\n#Lilypad #Roasted`;
     
     // Open Twitter intent URL
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
+  };
+
+  // Animation variants
+  const buttonVariants = {
+    hover: { 
+      scale: 1.05,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    },
+    tap: { scale: 0.95 }
   };
 
   return (
@@ -102,6 +115,27 @@ export default function Home() {
             isTyping={isRoasting}
             position="top"
           />
+          
+          {/* Twitter share button (only show if a roast has been generated) */}
+          {roastText && !isRoasting && roastText !== "Ribbit! Paste your wallet address and I'll roast your financial decisions like they're flies on a lily pad!" && (
+            <div className="flex justify-center mt-4">
+              <motion.button 
+                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-200 flex items-center gap-2"
+                onClick={handleTweetClick}
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.002 10.002 0 01-3.127 1.195c-.897-.957-2.178-1.555-3.594-1.555-2.719 0-4.925 2.206-4.925 4.926 0 .386.044.762.127 1.122-4.092-.207-7.72-2.165-10.148-5.145a4.93 4.93 0 00-.667 2.475c0 1.71.87 3.213 2.188 4.096a4.936 4.936 0 01-2.228-.616v.061c0 2.385 1.693 4.374 3.946 4.827a4.964 4.964 0 01-2.223.085c.627 1.956 2.445 3.38 4.6 3.42-1.685 1.32-3.808 2.108-6.115 2.108-.398 0-.79-.023-1.175-.068a14.011 14.011 0 007.548 2.212c9.057 0 14.009-7.503 14.009-14.01 0-.213-.005-.425-.014-.636a10.003 10.003 0 002.455-2.55z" />
+                </svg>
+                Tweet this roast
+              </motion.button>
+            </div>
+          )}
         </div>
         
         {error && (
@@ -128,76 +162,21 @@ export default function Home() {
               value={walletAddress}
               onChange={(e) => setWalletAddress(e.target.value)}
               disabled={isRoasting}
+              suppressHydrationWarning
             />
-            <button 
+            <motion.button 
               className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-md transition duration-200 sm:flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleRoastClick}
               disabled={isRoasting}
+              variants={buttonVariants}
+              whileHover={!isRoasting ? "hover" : undefined}
+              whileTap={!isRoasting ? "tap" : undefined}
+              suppressHydrationWarning
             >
               {isRoasting ? 'Analyzing...' : 'Roast Me!'}
-            </button>
+            </motion.button>
           </div>
         </div>
-        
-        {/* Twitter share button (only show if a roast has been generated) */}
-        {roastText && !isRoasting && roastText !== "Ribbit! Paste your wallet address and I'll roast your financial decisions like they're flies on a lily pad!" && (
-          <button 
-            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-200 flex items-center gap-2"
-            onClick={handleTweetClick}
-          >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.002 10.002 0 01-3.127 1.195c-.897-.957-2.178-1.555-3.594-1.555-2.719 0-4.925 2.206-4.925 4.926 0 .386.044.762.127 1.122-4.092-.207-7.72-2.165-10.148-5.145a4.93 4.93 0 00-.667 2.475c0 1.71.87 3.213 2.188 4.096a4.936 4.936 0 01-2.228-.616v.061c0 2.385 1.693 4.374 3.946 4.827a4.964 4.964 0 01-2.223.085c.627 1.956 2.445 3.38 4.6 3.42-1.685 1.32-3.808 2.108-6.115 2.108-.398 0-.79-.023-1.175-.068a14.011 14.011 0 007.548 2.212c9.057 0 14.009-7.503 14.009-14.01 0-.213-.005-.425-.014-.636a10.003 10.003 0 002.455-2.55z" />
-            </svg>
-            Tweet this roast
-          </button>
-        )}
-        
-        {/* Transaction summary (shown if available and after roast) */}
-        {transactionSummary && !isRoasting && (
-          <div className="w-full max-w-xl mt-8 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-              Transaction Summary
-              {transactionSummary.chain && (
-                <span className="ml-2 text-sm py-1 px-2 bg-gray-200 dark:bg-gray-700 rounded">
-                  {transactionSummary.chain.toUpperCase()}
-                </span>
-              )}
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Total Transactions:</span>
-                <span className="font-medium">{transactionSummary.totalTransactions}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Total Value:</span>
-                <span className="font-medium">
-                  {transactionSummary.totalValue} 
-                  {transactionSummary.chain === 'ethereum' ? 'ETH' : 
-                   transactionSummary.chain === 'polygon' ? 'MATIC' :
-                   transactionSummary.chain === 'arbitrum' ? 'ARB' :
-                   transactionSummary.chain === 'optimism' ? 'OP' :
-                   transactionSummary.chain === 'base' ? 'BASE' : 'ETH'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Contracts Interacted:</span>
-                <span className="font-medium">{transactionSummary.uniqueContractsInteracted}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Success Rate:</span>
-                <span className="font-medium">{transactionSummary.successRate}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Failed Transactions:</span>
-                <span className="font-medium">{transactionSummary.failedTransactions}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Days Since Activity:</span>
-                <span className="font-medium">{transactionSummary.daysInactive || 0}</span>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
       
       <footer className="mt-auto py-6 text-center text-gray-500 dark:text-gray-400 text-sm">
