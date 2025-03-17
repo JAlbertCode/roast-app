@@ -1,12 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import SirCroaksworth from './components/SirCroaksworth';
 import SpeechBubble from './components/SpeechBubble';
+import ChainSelector from './components/ChainSelector';
+import DarkModeToggle from './components/DarkModeToggle';
 import { TransactionSummary } from './utils/etherscanService';
+import { ChainId } from './utils/chains/types';
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string>('');
+  const [selectedChain, setSelectedChain] = useState<ChainId>('ethereum');
   const [isRoasting, setIsRoasting] = useState<boolean>(false);
   const [roastText, setRoastText] = useState<string>("Ribbit! Paste your wallet address and I'll roast your financial decisions like they're flies on a lily pad!");
   const [walletSize, setWalletSize] = useState<'poor' | 'average' | 'wealthy'>('average');
@@ -28,13 +33,16 @@ export default function Home() {
     setRoastText("Hmm, let me check your transactions... *ribbit*");
 
     try {
-      // Call our API endpoint
+      // Call our API endpoint with selected chain
       const response = await fetch('/api/roast', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ walletAddress }),
+        body: JSON.stringify({ 
+          walletAddress,
+          chainId: selectedChain 
+        }),
       });
 
       if (!response.ok) {
@@ -73,9 +81,12 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center min-h-screen p-6 sm:p-8 bg-gradient-to-b from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      <header className="w-full max-w-4xl text-center mb-6 sm:mb-8 mt-6 sm:mt-10">
-        <h1 className="text-3xl sm:text-4xl font-bold text-green-800 dark:text-green-400">Sir Croaksworth&apos;s Roast DApp</h1>
-        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mt-2">
+      <header className="w-full max-w-4xl mb-6 sm:mb-8 mt-6 sm:mt-10">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-green-800 dark:text-green-400">Sir Croaksworth&apos;s Roast DApp</h1>
+          <DarkModeToggle />
+        </div>
+        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 text-center sm:text-left">
           Get your wallet transactions roasted by the most savage frog banker on the blockchain
         </p>
       </header>
@@ -98,6 +109,15 @@ export default function Home() {
             {error}
           </div>
         )}
+        
+        <div className="w-full max-w-xl mb-4">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Blockchain</label>
+          <ChainSelector 
+            selectedChain={selectedChain}
+            onChainSelect={setSelectedChain}
+            disabled={isRoasting}
+          />
+        </div>
         
         <div className="w-full max-w-xl mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row gap-2">
@@ -135,7 +155,14 @@ export default function Home() {
         {/* Transaction summary (shown if available and after roast) */}
         {transactionSummary && !isRoasting && (
           <div className="w-full max-w-xl mt-8 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Transaction Summary</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+              Transaction Summary
+              {transactionSummary.chain && (
+                <span className="ml-2 text-sm py-1 px-2 bg-gray-200 dark:bg-gray-700 rounded">
+                  {transactionSummary.chain.toUpperCase()}
+                </span>
+              )}
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Total Transactions:</span>
@@ -143,7 +170,14 @@ export default function Home() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Total Value:</span>
-                <span className="font-medium">{transactionSummary.totalValue} ETH</span>
+                <span className="font-medium">
+                  {transactionSummary.totalValue} 
+                  {transactionSummary.chain === 'ethereum' ? 'ETH' : 
+                   transactionSummary.chain === 'polygon' ? 'MATIC' :
+                   transactionSummary.chain === 'arbitrum' ? 'ARB' :
+                   transactionSummary.chain === 'optimism' ? 'OP' :
+                   transactionSummary.chain === 'base' ? 'BASE' : 'ETH'}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Contracts Interacted:</span>

@@ -29,11 +29,23 @@ A decentralized application where Sir Croaksworth, the frog banker, roasts users
 - Added animated transitions for components
 - Enhanced user experience with interactive animations
 
+### Commit 5: Multi-Chain Support
+- Added support for Ethereum, Polygon, Arbitrum, Optimism, and Base chains
+- Created ChainSelector component for selecting blockchain networks
+- Updated API integration to work with multiple chains
+- Enhanced transaction summary to display chain-specific information
+
+### Commit 6: Dark Mode Support
+- Added dark mode toggle component
+- Implemented theme persistence using localStorage
+- Enhanced UI for dark mode
+- Updated metadata and app title
+
 ### Next Steps:
-- Implement multi-chain support (Polygon, etc.)
 - Add unit tests
 - Deploy to Vercel
-- Add dark mode toggle
+- Implement error handling for missing API keys
+- Add loading animations
 
 ## Getting Started
 
