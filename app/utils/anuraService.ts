@@ -40,12 +40,18 @@ export const generateRoast = async (
 ): Promise<string> => {
   try {
     // Construct the system prompt for Sir Croaksworth's persona
-    const systemPrompt = `You are Sir Croaksworth, a monocle-wearing frog banker who speaks with sophisticated disdain. 
-    Your job is to roast users based on their blockchain transaction history. Be savage but witty, 
-    focusing on their poor financial decisions. Use frog puns and references occasionally. 
-    Keep responses under 230 characters for social sharing. DO NOT include the wallet address in your response.
-    Focus on specific transactions or patterns and make fun of them. Be very specific about the transactions, mention token names, 
-    amounts, and timing when possible. Be extremely sarcastic and judgmental about their crypto choices.`;
+    const systemPrompt = `You are Sir Croaksworth, a ruthless, monocle-wearing frog banker who SAVAGELY roasts users based on their blockchain transaction history. 
+    Your job is to be BRUTALLY honest, specific, and borderline offensive (without using slurs or truly hateful content). Don't hold back.
+    
+    Focus on SPECIFIC transactions or patterns you see in their data. Mention exact tokens, amounts, and timing when possible.
+    Be extremely sarcastic, judgmental, and condescending about their crypto choices.
+    
+    NEVER include the wallet address itself in your response.
+    NEVER be generic - always reference specific details from their transaction history.
+    NEVER be gentle or kind - be savage and ruthless.
+    
+    Keep responses under 230 characters for easy sharing.
+    Use frog puns if they fit naturally, but prioritize brutal specificity.`;
     
     // Get the chain information
     const chain = transactionSummary.chain || 'ethereum';
@@ -85,26 +91,39 @@ export const generateRoast = async (
       }
     };
     
-    // Make the API request
-    const response = await fetch("https://anura-testnet.lilypad.tech/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(requestPayload)
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error("Error from Anura API:", errorData);
-      return getFallbackRoast(walletAddress, transactionSummary);
-    }
-    
-    const data = await response.json() as AnuraResponse;
-    
-    // Extract the roast from the response
-    return data.message.content;
+    try {
+      // Make the API request
+      const response = await fetch("https://anura-testnet.lilypad.tech/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(requestPayload)
+      });
+      
+      if (!response.ok) {
+        console.error(`API Error: ${response.status} ${response.statusText}`);
+        return getFallbackRoast(walletAddress, transactionSummary);
+      }
+      
+      // Try to parse the JSON response
+      let data;
+      try {
+        const responseText = await response.text();
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("Error parsing response:", parseError);
+        return getFallbackRoast(walletAddress, transactionSummary);
+      }
+      
+      // Extract the roast from the response
+      if (data && data.message && data.message.content) {
+        return data.message.content;
+      } else {
+        console.error("Unexpected response format:", data);
+        return getFallbackRoast(walletAddress, transactionSummary);
+      }
     
   } catch (error) {
     console.error("Error generating roast:", error);
@@ -121,13 +140,15 @@ const getFallbackRoast = (
   summary: TransactionSummary
 ): string => {
   const roasts = [
-    `Oh my! Wallet ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} - even a tadpole would manage better finances. ${summary.failedTransactions} failed transactions? I've seen lily pads with better success rates!`,
+    `${summary.totalValue} in total transactions? My pond scum has more value. ${summary.failedTransactions} failed transactions proves even your tech skills are as pathetic as your portfolio!`,
     
-    `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} - with ${summary.totalValue} ETH in total value, you're less liquid than a dried-up swamp. Ribbit of shame for you!`,
+    `You call that investing? ${summary.totalTransactions} pointless transactions across ${summary.uniqueContractsInteracted} contracts. Watching paint dry would've been more profitable!`,
     
-    `Dear ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}, your wallet's been inactive for ${summary.daysInactive} days. Even hibernating frogs show more signs of life!`,
+    `${summary.daysInactive} days since your last transaction? Smart move staying away from what you clearly don't understand. Your success rate of ${summary.successRate}% is an embarrassment to amphibians everywhere.`,
     
-    `Looking at wallet ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}'s activity, I must ask: was your strategy to buy high and sell low? Quite ribbiting, if unintentionally so.`
+    `You've been hodling for what exactly? A masterclass in how to lose money? Even tadpoles make better financial decisions than this disaster of a wallet.`,
+    
+    `I've seen more impressive portfolios in a child's Monopoly game. This isn't investing - it's donating to smarter traders!`
   ];
   
   return roasts[Math.floor(Math.random() * roasts.length)];

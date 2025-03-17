@@ -38,12 +38,21 @@ export async function POST(request: Request) {
     const { aggregatedSummary, walletCategory, mostActiveChain, chainSummaries } = 
       await getAllChainsData(walletAddress);
     
-    // Generate roast using Anura API
-    const roast = await generateRoast(aggregatedSummary, walletAddress, ANURA_API_KEY);
+    // Generate multiple roasts (3 of them)
+    const roastPromises = [];
+    const numberOfRoasts = 3;
+    
+    // Create multiple roast promises
+    for (let i = 0; i < numberOfRoasts; i++) {
+      roastPromises.push(generateRoast(aggregatedSummary, walletAddress, ANURA_API_KEY));
+    }
+    
+    // Execute them in parallel for better performance
+    const roasts = await Promise.all(roastPromises);
     
     // Return the results
     return NextResponse.json({
-      roast,
+      roasts,
       walletCategory,
       summary: aggregatedSummary,
       mostActiveChain,

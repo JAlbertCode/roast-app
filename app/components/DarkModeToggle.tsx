@@ -1,24 +1,31 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const DarkModeToggle = () => {
   const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
   
-  // Initialize dark mode based on user's preference or system setting
+  // Use useEffect to handle client-side rendering
   useEffect(() => {
-    // Check for saved preference
+    setMounted(true);
+    
+    // Check for saved preference or system preference
     const savedMode = localStorage.getItem('darkMode');
+    const systemDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
     if (savedMode !== null) {
       setDarkMode(savedMode === 'true');
     } else {
-      // Check for system preference
-      setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      setDarkMode(systemDarkMode);
     }
   }, []);
   
   // Update class on the document element when dark mode changes
   useEffect(() => {
+    if (!mounted) return;
+    
     if (darkMode) {
       document.documentElement.classList.add('dark');
       document.documentElement.classList.remove('light');
@@ -29,7 +36,12 @@ const DarkModeToggle = () => {
     
     // Save preference to localStorage
     localStorage.setItem('darkMode', darkMode.toString());
-  }, [darkMode]);
+  }, [darkMode, mounted]);
+
+  if (!mounted) {
+    // Return empty div during SSR to prevent hydration mismatch
+    return <div className="w-10 h-10" />;
+  }
 
   return (
     <motion.button

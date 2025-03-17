@@ -1,4 +1,20 @@
-'use client';
+          {/* Roast selector - only show if multiple roasts are generated */}
+          {roasts.length > 0 && !isRoasting && (
+            <div className="mt-4 flex flex-col items-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Choose your favorite roast:</p>
+              <div className="flex space-x-2">
+                {roasts.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`w-8 h-8 flex items-center justify-center rounded-full ${selectedRoastIndex === index ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
+                    onClick={() => handleRoastSelection(index)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}'use client';
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,6 +27,8 @@ export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string>('');
   const [isRoasting, setIsRoasting] = useState<boolean>(false);
   const [roastText, setRoastText] = useState<string>("Ribbit! Paste your wallet address and I'll roast your financial decisions like they're flies on a lily pad!");
+  const [roasts, setRoasts] = useState<string[]>([]);
+  const [selectedRoastIndex, setSelectedRoastIndex] = useState<number>(0);
   const [walletSize, setWalletSize] = useState<'poor' | 'average' | 'wealthy'>('average');
   const [transactionSummary, setTransactionSummary] = useState<TransactionSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -46,8 +64,12 @@ export default function Home() {
 
       const data = await response.json();
       
-      // Update state with the roast and wallet category
-      setRoastText(data.roast);
+      // Reset selected roast index
+      setSelectedRoastIndex(0);
+      
+      // Update state with the roasts and wallet category
+      setRoasts(data.roasts);
+      setRoastText(data.roasts[0]); // Display the first roast initially
       setWalletSize(data.walletCategory);
       setTransactionSummary(data.summary);
       
@@ -57,6 +79,13 @@ export default function Home() {
       setRoastText("Ribbit! Something went wrong while analyzing your wallet. My lily pad connection seems to be unstable.");
     } finally {
       setIsRoasting(false);
+    }
+  };
+
+  const handleRoastSelection = (index: number) => {
+    if (index >= 0 && index < roasts.length) {
+      setSelectedRoastIndex(index);
+      setRoastText(roasts[index]);
     }
   };
 
@@ -117,11 +146,29 @@ export default function Home() {
             position="top"
           />
           
+          {/* Roast selector - only show if multiple roasts are generated */}
+          {roasts.length > 0 && !isRoasting && (
+            <div className="mt-4 flex flex-col items-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Choose your favorite roast:</p>
+              <div className="flex space-x-2">
+                {roasts.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`w-8 h-8 flex items-center justify-center rounded-full ${selectedRoastIndex === index ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
+                    onClick={() => handleRoastSelection(index)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          
           {/* Twitter share button (only show if a roast has been generated) */}
           {roastText && !isRoasting && roastText !== "Ribbit! Paste your wallet address and I'll roast your financial decisions like they're flies on a lily pad!" && (
             <div className="flex justify-center mt-4">
               <motion.button 
-                className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition duration-200 flex items-center gap-2"
+                className="bg-black hover:bg-gray-800 text-white py-3 px-6 rounded-md transition duration-200 flex items-center gap-2 shadow-md"
                 onClick={handleTweetClick}
                 variants={buttonVariants}
                 whileHover="hover"
@@ -130,10 +177,10 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.002 10.002 0 01-3.127 1.195c-.897-.957-2.178-1.555-3.594-1.555-2.719 0-4.925 2.206-4.925 4.926 0 .386.044.762.127 1.122-4.092-.207-7.72-2.165-10.148-5.145a4.93 4.93 0 00-.667 2.475c0 1.71.87 3.213 2.188 4.096a4.936 4.936 0 01-2.228-.616v.061c0 2.385 1.693 4.374 3.946 4.827a4.964 4.964 0 01-2.223.085c.627 1.956 2.445 3.38 4.6 3.42-1.685 1.32-3.808 2.108-6.115 2.108-.398 0-.79-.023-1.175-.068a14.011 14.011 0 007.548 2.212c9.057 0 14.009-7.503 14.009-14.01 0-.213-.005-.425-.014-.636a10.003 10.003 0 002.455-2.55z" />
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
-                Tweet this roast
+                Share on X
               </motion.button>
             </div>
           )}
