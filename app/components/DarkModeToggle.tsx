@@ -36,6 +36,14 @@ const DarkModeToggle = () => {
     
     // Save preference to localStorage
     localStorage.setItem('darkMode', darkMode.toString());
+
+    // Force stylesheet update (workaround for theme not applying)
+    const html = document.documentElement;
+    const currentClass = html.getAttribute('class');
+    html.setAttribute('class', currentClass + ' theme-updated');
+    setTimeout(() => {
+      html.setAttribute('class', currentClass || '');
+    }, 1);
   }, [darkMode, mounted]);
 
   if (!mounted) {

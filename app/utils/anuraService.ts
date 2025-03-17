@@ -40,18 +40,21 @@ export const generateRoast = async (
 ): Promise<string> => {
   try {
     // Construct the system prompt for Sir Croaksworth's persona
-    const systemPrompt = `You are Sir Croaksworth, a ruthless, monocle-wearing frog banker who SAVAGELY roasts users based on their blockchain transaction history. 
+    const systemPrompt = `You are Sir Croaksworth, a ruthless, monocle-wearing aristocratic frog banker who SAVAGELY roasts users based on their blockchain transaction history. 
     Your job is to be BRUTALLY honest, specific, and borderline offensive (without using slurs or truly hateful content). Don't hold back.
     
     Focus on SPECIFIC transactions or patterns you see in their data. Mention exact tokens, amounts, and timing when possible.
     Be extremely sarcastic, judgmental, and condescending about their crypto choices.
     
+    Use witty wordplay and clever frog puns (e.g., "toadally pathetic", "what the frog were you thinking", "leap to conclusions", "lily-livered", "hopping mad").
+    Use financial mockery (e.g., "even pond scum yields better returns", "your portfolio's more underwater than I am").
+    
     NEVER include the wallet address itself in your response.
     NEVER be generic - always reference specific details from their transaction history.
-    NEVER be gentle or kind - be savage and ruthless.
+    NEVER be gentle or kind - be savage, clever, and ruthless.
     
     Keep responses under 230 characters for easy sharing.
-    Use frog puns if they fit naturally, but prioritize brutal specificity.`;
+    Balance frog puns, financial mockery, and specific transaction details in your devastating roasts.`;
     
     // Get the chain information
     const chain = transactionSummary.chain || 'ethereum';
@@ -147,30 +150,30 @@ const getFallbackRoast = (
   // If we have meaningful transaction data, use it for specific roasts
   if (summary.totalTransactions > 0) {
     const roasts = [
-      `${summary.totalValue} in total transactions? My pond scum has more value. ${summary.failedTransactions} failed transactions proves even your tech skills are as pathetic as your portfolio!`,
+      `${summary.totalValue} in transactions? Toadally pathetic! Even lily pads generate more value. ${summary.failedTransactions} failed tx's proves you're as financially competent as a tadpole with a calculator!`,
       
-      `You call that investing? ${summary.totalTransactions} pointless transactions across ${summary.uniqueContractsInteracted} contracts. Watching paint dry would've been more profitable!`,
+      `You call that investing? ${summary.totalTransactions} pointless hops across ${summary.uniqueContractsInteracted} contracts. Your portfolio is more underwater than I am, and I'm a frog!`,
       
-      `${summary.daysInactive} days since your last transaction? Smart move staying away from what you clearly don't understand. Your success rate of ${summary.successRate}% is an embarrassment to amphibians everywhere.`,
+      `${summary.daysInactive} days of inactivity? Ribbit-iculous! Smart move staying away from what you clearly don't understand. Your success rate of ${summary.successRate}% makes even pond scum look valuable.`,
       
-      `You've been hodling for what exactly? A masterclass in how to lose money? Even tadpoles make better financial decisions than this disaster of a wallet.`,
+      `Hopping mad looking at your trades! This wallet is a masterclass in financial self-destruction. Even tadpoles wouldn't touch these tokens with their tiny tails!`,
       
-      `I've seen more impressive portfolios in a child's Monopoly game. This isn't investing - it's donating to smarter traders!`
+      `I've seen more impressive portfolios in a child's Monopoly game. This isn't investing - it's toadal financial suicide! What the frog were you thinking?`
     ];
     
     return roasts[Math.floor(Math.random() * roasts.length)];
   } else {
     // Generic fallbacks for when we can't get transaction data
     const genericRoasts = [
-      "Either this wallet is new, or you're too embarrassed to actually use it. Smart move hiding your shameful trades from me, tadpole!",
+      "Either this wallet is new, or you're too embarrassed to show your transactions. Smart move hiding your shameful trades - I'd be green with embarrassment too!",
       
-      "No transactions found? What's the matter, afraid to get your webbed feet wet in the crypto pond? Ribbit-iculous!",
+      "No transactions found? What's the matter, afraid to get your webbed feet wet in the crypto pond? Ribbit or get off the lily pad!",
       
-      "Empty wallet, empty dreams. At least you're consistent in your mediocrity. Even lily pads have more activity than this wallet!",
+      "Empty wallet, empty dreams. Your crypto activity is as barren as a dried-up swamp. Even my pet flies have more impressive portfolios!",
       
-      "Either this wallet is cleaner than a frog's tongue or you've made such catastrophic trades you had to start over. Neither impresses me!",
+      "Wallet cleaner than my monocle! Either you've never traded or you've made such catastrophic leaps that you had to start over. Either way, I'm not impressed!",
       
-      "No transactions detected? You're either the world's most patient HODLer or just hopelessly confused about how blockchains work. I'm betting on the latter!"
+      "No transactions? You're either the world's most patient HODLer or just hopelessly confused about how blockchains work. Toadally betting on the latter!"
     ];
     
     return genericRoasts[Math.floor(Math.random() * genericRoasts.length)];
