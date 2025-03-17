@@ -1,6 +1,10 @@
 # Sir Croaksworth's Roast DApp - Development Progress
 
-A decentralized application where Sir Croaksworth, the frog banker, roasts users' crypto transactions.
+A decentralized application where Sir Croaksworth, the savage frog banker, roasts users' crypto transactions across multiple blockchains.
+
+## Project Overview
+
+Sir Croaksworth's Roast DApp is a humorous application that analyzes blockchain wallet transactions and generates savage, personalized roasts that users can share on social media. The app uses Lilypad's Anura API for AI-generated content.
 
 ## Development Progress
 
@@ -30,10 +34,11 @@ A decentralized application where Sir Croaksworth, the frog banker, roasts users
 - Enhanced user experience with interactive animations
 
 ### Commit 5: Multi-Chain Support
-- Added support for Ethereum, Polygon, Arbitrum, Optimism, and Base chains
-- Created ChainSelector component for selecting blockchain networks
-- Updated API integration to work with multiple chains
-- Enhanced transaction summary to display chain-specific information
+- Removed chain selector for better UX
+- Implemented automatic scanning of all configured chains
+- Created aggregated data model for comprehensive transaction summary
+- Updated UI to indicate multi-chain support
+- Enhanced roast generation with cross-chain data
 
 ### Commit 6: Dark Mode Support
 - Added dark mode toggle component
@@ -41,37 +46,89 @@ A decentralized application where Sir Croaksworth, the frog banker, roasts users
 - Enhanced UI for dark mode
 - Updated metadata and app title
 
-### Commit 7: Multi-Chain Support Without Selection
-- Removed chain selector for better UX
-- Implemented automatic scanning of all configured chains
-- Created aggregated data model for comprehensive transaction summary
-- Updated UI to indicate multi-chain support
-- Enhanced roast generation with cross-chain data
-
-### Commit 8: Enhanced Sir Croaksworth Character
+### Commit 7: Enhanced Sir Croaksworth Character
 - Created a better frog banker SVG with more details
 - Improved animations with smoother transitions
 - Added enhanced icons for wallet status indicators
 - Resized and repositioned Sir Croaksworth for better visibility
 - Added accessibility labels for screen readers
 
-### Next Steps:
-- Add unit tests
-- Deploy to Vercel
-- Add loading animations for better UX
+### Commit 8: Feedback Implementation
+- Fixed API integration with better error handling
+- Made roasts more specific, aggressive and shareable 
+- Added multiple roast options with user selection UI
+- Updated sharing button from Twitter to X with new design
+- Fixed dark mode functionality with client-side hydration
+- Ensured wallet addresses never appear in roasts
+
+## Current Status & Known Issues
+
+1. **API Integration**: The Anura API integration is in place but may need adjustments depending on the actual API responses. We've implemented robust error handling and fallbacks.
+
+2. **Dark Mode**: The dark mode toggle functionality should be working but needs more testing.
+
+3. **Roast Generation**: The roast generation now produces 3 different options for users to choose from.
+
+4. **Multi-Chain Support**: The app automatically scans all chains for which API keys are available.
+
+## Next Steps
+
+1. **Testing**: Add comprehensive unit and integration tests
+2. **Deployment**: Prepare for deployment to Vercel
+3. **Loading Animations**: Add loading states and animations for better UX
+4. **Mobile Optimization**: Improve the mobile experience with better responsive design
+
+## Environment Requirements
+
+To run this application, you'll need:
+
+1. **Etherscan API Key**: Required for fetching Ethereum transaction data
+2. **Anura API Key**: Required for AI-generated roasts
+3. **Optional API Keys** for other blockchains:
+   - Polygonscan API Key (Polygon)
+   - Arbiscan API Key (Arbitrum)
+   - Optimism API Key
+   - Basescan API Key (Base)
 
 ## Getting Started
 
-First, run the development server:
+1. Create a `.env.local` file in the project root with your API keys:
+   ```
+   NEXT_PUBLIC_ETHERSCAN_API_KEY=your_key_here
+   ANURA_API_KEY=your_key_here
+   NEXT_PUBLIC_POLYGONSCAN_API_KEY=optional
+   NEXT_PUBLIC_ARBISCAN_API_KEY=optional
+   NEXT_PUBLIC_OPTIMISM_API_KEY=optional
+   NEXT_PUBLIC_BASESCAN_API_KEY=optional
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Technical Architecture
+
+- **Frontend**: Next.js with React and TypeScript
+- **Styling**: TailwindCSS
+- **Animations**: Framer Motion for smooth transitions and animations
+- **API Integration**: 
+  - Blockchain explorers for transaction data
+  - Anura API for AI-powered roast generation
+- **State Management**: React useState/useEffect hooks
+- **Dark Mode**: Client-side with localStorage persistence
+
+## Future Improvements
+
+- Add unit and integration tests
+- Optimize for mobile devices
+- Add more animation effects and transitions
+- Improve accessibility features
+- Add analytics to track user engagement
