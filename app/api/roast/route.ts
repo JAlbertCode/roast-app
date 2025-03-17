@@ -42,6 +42,9 @@ export async function POST(request: Request) {
     const roastPromises = [];
     const numberOfRoasts = 3;
     
+    console.log('Generating roasts for wallet:', walletAddress.substring(0, 6) + '...' + walletAddress.substring(walletAddress.length - 4));
+    console.log('Using Anura API with model: deepseek-r1:7b');
+    
     // Create multiple roast promises
     for (let i = 0; i < numberOfRoasts; i++) {
       roastPromises.push(generateRoast(aggregatedSummary, walletAddress, ANURA_API_KEY));

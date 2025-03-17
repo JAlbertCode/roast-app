@@ -61,6 +61,14 @@ Sir Croaksworth's Roast DApp is a humorous application that analyzes blockchain 
 - Fixed dark mode functionality with client-side hydration
 - Ensured wallet addresses never appear in roasts
 
+### Commit 10: API Error Handling
+- Fixed JSON parsing error in Anura API integration
+- Added improved error detection for HTML responses
+- Enhanced fallback roast system with generic options for new wallets
+- Fixed Next.js config warning about invalid postcssOptions
+- Added better error messaging in the UI
+- Fixed syntax errors in anuraService.ts
+
 ## Current Status & Known Issues
 
 1. **API Integration**: The Anura API integration is in place but may need adjustments depending on the actual API responses. We've implemented robust error handling and fallbacks.
@@ -71,12 +79,15 @@ Sir Croaksworth's Roast DApp is a humorous application that analyzes blockchain 
 
 4. **Multi-Chain Support**: The app automatically scans all chains for which API keys are available.
 
+5. **Client Components**: Added "use client" directives to all React components that use client-side hooks and libraries like Framer Motion.
+
 ## Next Steps
 
 1. **Testing**: Add comprehensive unit and integration tests
 2. **Deployment**: Prepare for deployment to Vercel
 3. **Loading Animations**: Add loading states and animations for better UX
 4. **Mobile Optimization**: Improve the mobile experience with better responsive design
+5. **Error Handling**: Enhance error handling for network failures and API limits
 
 ## Environment Requirements
 

@@ -1,20 +1,4 @@
-          {/* Roast selector - only show if multiple roasts are generated */}
-          {roasts.length > 0 && !isRoasting && (
-            <div className="mt-4 flex flex-col items-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Choose your favorite roast:</p>
-              <div className="flex space-x-2">
-                {roasts.map((_, index) => (
-                  <button
-                    key={index}
-                    className={`w-8 h-8 flex items-center justify-center rounded-full ${selectedRoastIndex === index ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
-                    onClick={() => handleRoastSelection(index)}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}'use client';
+'use client';
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -73,10 +57,13 @@ export default function Home() {
       setWalletSize(data.walletCategory);
       setTransactionSummary(data.summary);
       
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error:', err);
-      setError('Failed to generate roast. Try again later.');
-      setRoastText("Ribbit! Something went wrong while analyzing your wallet. My lily pad connection seems to be unstable.");
+      // Set a user-friendly error message
+      setError(err.message && err.message.includes('JSON') 
+        ? 'Network error communicating with Anura API. Please try again later.' 
+        : 'Failed to generate roast. Try again later.');
+      setRoastText("Ribbit! My lily pad connection seems unstable. I couldn't analyze your wallet properly. Try again or check if your wallet address is valid.");
     } finally {
       setIsRoasting(false);
     }

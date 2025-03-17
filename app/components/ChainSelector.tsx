@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChainId, CHAIN_NAMES } from '../utils/chains/types';
