@@ -1,5 +1,6 @@
 import React from 'react';
-import Image from 'next/image';
+import { motion } from 'framer-motion';
+import SirCroaksworthSvg from './icons/SirCroaksworthSvg';
 
 interface SirCroaksworthProps {
   isRoasting: boolean;
@@ -10,45 +11,114 @@ const SirCroaksworth: React.FC<SirCroaksworthProps> = ({
   isRoasting = false,
   walletSize = 'average'
 }) => {
-  // Different states for Sir Croaksworth based on his activity and the wallet size
-  const getStateClass = () => {
-    if (isRoasting) {
-      return 'animate-bounce';
+  // Animation variants for different states
+  const characterVariants = {
+    idle: { 
+      scale: 1,
+      rotate: 0
+    },
+    roasting: { 
+      scale: [1, 1.05, 1, 1.05, 1],
+      transition: { 
+        repeat: Infinity,
+        duration: 1,
+      }
+    },
+    wealthy: {
+      scale: 1.05,
+      transition: { 
+        yoyo: Infinity,
+        duration: 1.5 
+      }
+    },
+    poor: {
+      rotate: [-2, 2],
+      transition: { 
+        repeat: Infinity,
+        repeatType: "reverse",
+        duration: 0.8
+      }
     }
-    if (walletSize === 'wealthy') {
-      return 'animate-pulse';
+  };
+
+  // Determine which animation to use
+  const getAnimationState = () => {
+    if (isRoasting) return 'roasting';
+    if (walletSize === 'wealthy') return 'wealthy';
+    if (walletSize === 'poor') return 'poor';
+    return 'idle';
+  };
+
+  // Money bag animation for wealthy users
+  const moneyBagVariants = {
+    initial: { scale: 0, opacity: 0 },
+    animate: { 
+      scale: 1, 
+      opacity: 1,
+      transition: { delay: 0.5 }
+    },
+    pulse: {
+      scale: [1, 1.1, 1],
+      transition: {
+        repeat: Infinity,
+        duration: 1
+      }
     }
-    if (walletSize === 'poor') {
-      return 'animate-spin-slow';
+  };
+
+  // Broke symbol animation for poor users
+  const brokeVariants = {
+    initial: { scale: 0, opacity: 0, rotate: -10 },
+    animate: { 
+      scale: 1, 
+      opacity: 1,
+      rotate: 0,
+      transition: { delay: 0.5 }
+    },
+    float: {
+      y: [0, -5, 0],
+      rotate: [-5, 5, -5],
+      transition: {
+        repeat: Infinity,
+        duration: 2
+      }
     }
-    return '';
   };
 
   return (
-    <div className={`relative ${getStateClass()}`}>
-      {/* This is a placeholder - we'll need to create/acquire the actual image */}
-      <div className="w-64 h-64 bg-green-200 dark:bg-green-900 rounded-full flex items-center justify-center overflow-hidden relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-green-800 dark:text-green-300 font-bold">Sir Croaksworth</p>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">Image Coming Soon</p>
-          </div>
-        </div>
+    <div className="relative">
+      <motion.div 
+        className="w-64 h-64 relative"
+        variants={characterVariants}
+        initial="idle"
+        animate={getAnimationState()}
+      >
+        <SirCroaksworthSvg className="w-full h-full" />
         
         {/* Money bags for wealthy users */}
         {walletSize === 'wealthy' && (
-          <div className="absolute bottom-2 right-2 bg-yellow-400 p-2 rounded-full animate-pulse">
+          <motion.div 
+            className="absolute bottom-2 right-2 bg-yellow-400 p-2 rounded-full"
+            variants={moneyBagVariants}
+            initial="initial"
+            animate={["animate", "pulse"]}
+          >
             💰
-          </div>
+          </motion.div>
         )}
         
         {/* Broke symbol for poor users */}
         {walletSize === 'poor' && (
-          <div className="absolute bottom-2 right-2 bg-red-400 p-2 rounded-full">
+          <motion.div 
+            className="absolute bottom-2 right-2 bg-red-400 p-2 rounded-full"
+            variants={brokeVariants}
+            initial="initial"
+            animate={["animate", "float"]}
+          >
             💸
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };

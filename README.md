@@ -16,11 +16,24 @@ A decentralized application where Sir Croaksworth, the frog banker, roasts users
 - Added Twitter sharing functionality
 - Extended Tailwind configuration with custom animations
 
+### Commit 3: API Integration
+- Implemented etherscanService for fetching and analyzing wallet transactions
+- Added anuraService for AI-powered roast generation using Lilypad's Anura API
+- Created serverless API route for secure API key handling
+- Added transaction summary display after roast generation
+- Added error handling and loading states
+
+### Commit 4: Animations and Character Design
+- Created SVG representation of Sir Croaksworth character
+- Implemented Framer Motion animations throughout the UI
+- Added animated transitions for components
+- Enhanced user experience with interactive animations
+
 ### Next Steps:
-- Create a proper Sir Croaksworth character image
-- Implement Etherscan API integration to fetch real transaction data
-- Integrate with Anura API for AI-generated roasts
-- Add more animations and polish UI
+- Implement multi-chain support (Polygon, etc.)
+- Add unit tests
+- Deploy to Vercel
+- Add dark mode toggle
 
 ## Getting Started
 

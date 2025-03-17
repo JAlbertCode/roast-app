@@ -45,20 +45,29 @@ export const generateRoast = async (
     focusing on their poor financial decisions. Use frog puns and references occasionally. 
     Keep responses under 280 characters for social sharing. Always address the wallet directly.`;
     
-    // Construct the user prompt with the transaction data
-    const userPrompt = `Roast this wallet address (${walletAddress}) based on these transactions:
+    // Get the chain information
+    const chain = transactionSummary.chain || 'ethereum';
+    const chainSymbol = chain === 'ethereum' ? 'ETH' : 
+                        chain === 'polygon' ? 'MATIC' :
+                        chain === 'arbitrum' ? 'ARB' :
+                        chain === 'optimism' ? 'OP' :
+                        chain === 'base' ? 'BASE' : 'ETH';
     
+    // Construct the user prompt with the transaction data
+    const userPrompt = `Roast this wallet address (${walletAddress}) based on these ${chain.toUpperCase()} blockchain transactions:
+    
+    Blockchain: ${chain.toUpperCase()}
     Total Transactions: ${transactionSummary.totalTransactions}
-    Total ETH Value: ${transactionSummary.totalValue} ETH
+    Total Value: ${transactionSummary.totalValue} ${chainSymbol}
     Unique Contracts Interacted: ${transactionSummary.uniqueContractsInteracted}
     Top Tokens: ${transactionSummary.topTokensTraded.map(t => `${t.symbol} (${t.count})`).join(', ')}
-    Largest Transaction: ${transactionSummary.largestTransaction.value} ETH at ${transactionSummary.largestTransaction.timestamp}
+    Largest Transaction: ${transactionSummary.largestTransaction.value} ${chainSymbol} at ${transactionSummary.largestTransaction.timestamp}
     Recent Activity: ${JSON.stringify(transactionSummary.recentActivity)}
     Failed Transactions: ${transactionSummary.failedTransactions}
     Success Rate: ${transactionSummary.successRate}%
     Days Since Last Activity: ${transactionSummary.daysInactive || 0}
     
-    Be Sir Croaksworth, the savage frog banker. Roast this wallet's financial decisions.`;
+    Be Sir Croaksworth, the savage frog banker. Roast this wallet's financial decisions on ${chain.toUpperCase()}.`;
     
     // Create the request payload
     const requestPayload: AnuraRequest = {

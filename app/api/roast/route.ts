@@ -1,21 +1,29 @@
 import { NextResponse } from 'next/server';
 import { 
-  getTransactions, 
-  getTokenTransfers, 
   summarizeTransactions,
   assessWalletCategory,
   TransactionSummary 
 } from '../../utils/etherscanService';
 import { generateRoast } from '../../utils/anuraService';
+import { ChainId } from '../../utils/chains/types';
+import { getTransactions, getTokenTransfers } from '../../utils/chains/blockchainService';
 
 // Load environment variables
-const ETHERSCAN_API_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY || '';
 const ANURA_API_KEY = process.env.ANURA_API_KEY || '';
+
+// Load blockchain API keys
+const BLOCKCHAIN_API_KEYS: Record<ChainId, string> = {
+  ethereum: process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY || '',
+  polygon: process.env.NEXT_PUBLIC_POLYGONSCAN_API_KEY || '',
+  arbitrum: process.env.NEXT_PUBLIC_ARBISCAN_API_KEY || '',
+  optimism: process.env.NEXT_PUBLIC_OPTIMISM_API_KEY || '',
+  base: process.env.NEXT_PUBLIC_BASESCAN_API_KEY || '',
+};
 
 export async function POST(request: Request) {
   try {
-    // Extract wallet address from request
-    const { walletAddress } = await request.json();
+    // Extract wallet address and chain from request
+    const { walletAddress, chainId = 'ethereum' } = await request.json();
     
     if (!walletAddress) {
       return NextResponse.json(
@@ -24,10 +32,10 @@ export async function POST(request: Request) {
       );
     }
     
-    // Check if API keys are set
-    if (!ETHERSCAN_API_KEY) {
+    // Check if selected chain API key is set
+    if (!BLOCKCHAIN_API_KEYS[chainId as ChainId]) {
       return NextResponse.json(
-        { error: 'Etherscan API key is not configured' },
+        { error: `${chainId} API key is not configured` },
         { status: 500 }
       );
     }
@@ -39,24 +47,32 @@ export async function POST(request: Request) {
       );
     }
     
-    // Fetch transactions data from Etherscan
-    const transactions = await getTransactions(walletAddress, ETHERSCAN_API_KEY);
-    const tokenTransfers = await getTokenTransfers(walletAddress, ETHERSCAN_API_KEY);
+    // Fetch transactions data from selected chain
+    const apiKey = BLOCKCHAIN_API_KEYS[chainId as ChainId];
+    const transactions = await getTransactions(walletAddress, chainId as ChainId, apiKey);
+    const tokenTransfers = await getTokenTransfers(walletAddress, chainId as ChainId, apiKey);
     
     // Process and summarize the transaction data
     const summary = summarizeTransactions(transactions, tokenTransfers, walletAddress);
+    
+    // Add chain information to summary
+    const enhancedSummary = {
+      ...summary,
+      chain: chainId
+    };
     
     // Assess wallet category (poor, average, wealthy)
     const walletCategory = assessWalletCategory(summary);
     
     // Generate roast using Anura API
-    const roast = await generateRoast(summary, walletAddress, ANURA_API_KEY);
+    const roast = await generateRoast(enhancedSummary, walletAddress, ANURA_API_KEY);
     
-    // Return the roast and wallet category
+    // Return the roast, wallet category, summary, and chain info
     return NextResponse.json({
       roast,
       walletCategory,
-      summary
+      summary: enhancedSummary,
+      chain: chainId
     });
     
   } catch (error) {
