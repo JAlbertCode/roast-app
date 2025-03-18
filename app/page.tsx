@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SirCroaksworth from './components/SirCroaksworth';
 import SpeechBubble from './components/SpeechBubble';
@@ -16,6 +16,35 @@ export default function Home() {
   const [walletSize, setWalletSize] = useState<'poor' | 'average' | 'wealthy'>('average');
   const [transactionSummary, setTransactionSummary] = useState<TransactionSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showRoastImage, setShowRoastImage] = useState<boolean>(false);
+
+  // Remove development tools
+  useEffect(() => {
+    // Function to remove development tools
+    const removeDevTools = () => {
+      const devTools = document.querySelectorAll(
+        '#__next-build-watcher, .__next-build-watcher, #nextjs-portal, #__next-portal-root, ' +
+        '#__turbopack-root, #react-refresh-proxy-container, .Toastify, .__react-dev-overlay, ' +
+        '.__web-inspector-hide-longpress-gesture, .__turbopack-error-overlay, [data-nextjs-portal], ' +
+        '[data-nextjs-toast]'
+      );
+      
+      devTools.forEach(el => {
+        if (el && el.parentNode) {
+          el.parentNode.removeChild(el);
+        }
+      });
+    };
+    
+    // Run immediately
+    removeDevTools();
+    
+    // Set up interval to periodically check and remove
+    const interval = setInterval(removeDevTools, 1000);
+    
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
 
   const handleRoastClick = async () => {
     // Reset any previous errors
