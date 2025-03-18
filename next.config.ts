@@ -4,11 +4,8 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: true,
   swcMinify: true,
-  // Hide development tools
-  devIndicators: {
-    buildActivity: false,
-    buildActivityPosition: 'bottom-right',
-  },
+  // Completely disable development indicators
+  devIndicators: false,
 };
 
 export default nextConfig;
