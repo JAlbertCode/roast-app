@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import BetterSirCroaksworthSvg from './icons/BetterSirCroaksworthSvg';
+import Image from 'next/image';
 
 interface RoastImageProps {
   roast: string;
   walletCategory: 'poor' | 'average' | 'wealthy';
-  transactionSummary: any;
+  transactionSummary: Record<string, unknown>;
   isVisible: boolean;
 }
 
@@ -21,14 +22,8 @@ const RoastImage: React.FC<RoastImageProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Only attempt to generate image if there's a roast and the component is visible
-    if (roast && isVisible && !image && !isLoading) {
-      generateImage();
-    }
-  }, [roast, isVisible]);
-
-  const generateImage = async () => {
+  // Define generateImage as a useCallback to prevent dependency warnings
+  const generateImage = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     
@@ -64,7 +59,14 @@ const RoastImage: React.FC<RoastImageProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [roast, walletCategory, transactionSummary]);
+
+  useEffect(() => {
+    // Only attempt to generate image if there's a roast and the component is visible
+    if (roast && isVisible && !image && !isLoading) {
+      generateImage();
+    }
+  }, [roast, isVisible, image, isLoading, generateImage]);
 
   // Animation variants
   const containerVariants = {
@@ -103,6 +105,8 @@ const RoastImage: React.FC<RoastImageProps> = ({
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500"></div>
             </div>
           ) : image ? (
+            // Using a regular img tag here instead of next/image for simplicity
+            // This is acceptable for dynamically generated content
             <img 
               src={image} 
               alt="Sir Croaksworth's roast" 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import SirCroaksworth from './components/SirCroaksworth';
 import SpeechBubble from './components/SpeechBubble';
 import { TransactionSummary } from './utils/etherscanService';
@@ -84,10 +84,11 @@ export default function Home() {
       setWalletSize(data.walletCategory);
       setTransactionSummary(data.summary);
       
-    } catch (err: any) {
-      console.error('Error:', err);
+    } catch (err) {
+      const error = err as Error;
+      console.error('Error:', error);
       // Set a user-friendly error message
-      setError(err.message && err.message.includes('JSON') 
+      setError(error.message && error.message.includes('JSON') 
         ? 'Network error communicating with Anura API. Please try again later.' 
         : 'Failed to generate roast. Try again later.');
       setRoastText("Ribbit! My lily pad connection seems unstable. I couldn't analyze your wallet properly. Try again or check if your wallet address is valid.");

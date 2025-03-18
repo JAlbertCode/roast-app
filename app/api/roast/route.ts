@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { TransactionSummary } from '../../utils/etherscanService';
 import { generateRoast, getRandomFallbackRoast } from '../../utils/anuraService';
 import { getAllChainsData } from '../../utils/getAllChainData';
 
@@ -48,7 +47,7 @@ export async function POST(request: Request) {
     // Create multiple roast promises with completely different parameters
     for (let i = 0; i < numberOfRoasts; i++) {
       // Add very distinct parameters for each request
-      const uniqueParams = {
+      const uniqueParams: Record<string, number | string> = {
         // Use completely different personalities, styles, and themes for each roast
         personalityIndex: i % 5,  // Use a different personality for each
         styleIndex: i % 5,        // Use a different style for each
@@ -62,7 +61,7 @@ export async function POST(request: Request) {
       const roastPromise = new Promise<{ text: string, error: boolean, errorMessage?: string }>(async (resolve) => {
         // Delay to ensure different random seeds
         if (i > 0) {
-          await new Promise(r => setTimeout(r, uniqueParams.timeout));
+          await new Promise(r => setTimeout(r, uniqueParams.timeout as number));
         }
         
         try {
@@ -70,8 +69,9 @@ export async function POST(request: Request) {
           console.log(`Generating roast #${i+1} with uniqueParams:`, uniqueParams);
           const roast = await generateRoast(aggregatedSummary, walletAddress, ANURA_API_KEY, uniqueParams);
           resolve({ text: roast, error: false });
-        } catch (err: any) {
-          console.error(`Error in roast request ${i+1}:`, err);
+        } catch (err) {
+          const error = err as Error;
+          console.error(`Error in roast request ${i+1}:`, error);
           
           // Get a better fallback roast that's still funny
           const fallbackRoast = getRandomFallbackRoast(uniqueParams);
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
           resolve({ 
             text: fallbackRoast, 
             error: false, // Mark as not error so UI still displays it normally
-            errorMessage: err.message,
+            errorMessage: error.message,
             isFallback: true
           });
         }
@@ -106,8 +106,9 @@ export async function POST(request: Request) {
       chainSummaries
     });
     
-  } catch (error: any) {
-    console.error('Error generating roast:', error);
+  } catch (error) {
+    const err = error as Error;
+    console.error('Error generating roast:', err);
     
     // Generate fallback roasts that are still funny
     const fallbackRoasts = [
@@ -119,9 +120,9 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { 
         error: 'API Error',
-        details: error.message || 'Unknown error',
+        details: err.message || 'Unknown error',
         errorCount: 1,
-        errors: [error.message],
+        errors: [err.message],
         roasts: fallbackRoasts,
         isFallback: true,
         walletCategory: 'average',

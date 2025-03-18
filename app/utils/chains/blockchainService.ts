@@ -1,4 +1,4 @@
-import { ChainId, ChainConfig } from './types';
+import { ChainId } from './types';
 import { chainConfigs, getChainConfig } from './config';
 import { Transaction } from '../etherscanService';
 
@@ -52,7 +52,7 @@ export const getTransactions = async (
     const data = await response.json();
     
     if (data.status === "1") {
-      return data.result.map((tx: any) => ({
+      return data.result.map((tx: Record<string, unknown>) => ({
         ...tx,
         chain: chainId, // Add chain information to each transaction
       }));
@@ -84,7 +84,7 @@ export const getTokenTransfers = async (
     const data = await response.json();
     
     if (data.status === "1") {
-      return data.result.map((tx: any) => ({
+      return data.result.map((tx: Record<string, unknown>) => ({
         ...tx,
         chain: chainId, // Add chain information to each transaction
       }));

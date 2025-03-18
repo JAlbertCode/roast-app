@@ -62,6 +62,8 @@ export const chainConfigs: Record<ChainId, ChainConfig> = {
 // Function to detect which chain a wallet address belongs to
 // This is a simplified implementation - in reality, addresses can exist on multiple chains
 export const detectChain = (address: string): ChainId => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _address = address; // Silence the unused var warning
   // For now, default to Ethereum
   // In a real implementation, we might check recent activity on each chain
   return 'ethereum';

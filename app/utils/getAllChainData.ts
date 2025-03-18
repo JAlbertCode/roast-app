@@ -55,7 +55,7 @@ export const getAllChainsData = async (walletAddress: string): Promise<{
   await Promise.all(chainPromises);
   
   // Create aggregated summary
-  let aggregatedSummary: TransactionSummary = {
+  const aggregatedSummary: TransactionSummary = {
     totalTransactions: 0,
     totalValue: '0',
     uniqueContractsInteracted: 0,
