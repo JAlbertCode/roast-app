@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SirCroaksworth from './components/SirCroaksworth';
 import SpeechBubble from './components/SpeechBubble';
-import RoastImage from './components/RoastImage';
 import { TransactionSummary } from './utils/etherscanService';
 
 export default function Home() {
@@ -16,7 +15,6 @@ export default function Home() {
   const [walletSize, setWalletSize] = useState<'poor' | 'average' | 'wealthy'>('average');
   const [transactionSummary, setTransactionSummary] = useState<TransactionSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showRoastImage, setShowRoastImage] = useState<boolean>(false);
 
   // Remove development tools
   useEffect(() => {
@@ -181,44 +179,22 @@ export default function Home() {
           
           {/* Twitter share button and roast image (only show if a roast has been generated) */}
           {roastText && !isRoasting && roastText !== "Ribbit! Paste your wallet address and I'll roast your financial decisions like they're flies on a lily pad!" && (
-            <div className="flex flex-col items-center mt-4">
-              {/* Roast Image */}
-              <RoastImage 
-                roast={roastText} 
-                walletCategory={walletSize}
-                transactionSummary={transactionSummary || undefined}
-                isVisible={showRoastImage}
-              />
-
-              {/* Share Button */}
-              <div className="flex justify-center mt-4">
-                <motion.button 
-                  className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-md transition duration-200 flex items-center gap-2 shadow-md"
-                  onClick={handleTweetClick}
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                >
-                  <span className="mr-1">🐸</span> Share my Roast
-                  <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                  </svg>
-                </motion.button>
-                
-                {/* Toggle Roast Image Button */}
-                <motion.button
-                  className={`ml-2 py-3 px-4 rounded-md transition duration-200 flex items-center shadow-md ${showRoastImage ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
-                  onClick={() => setShowRoastImage(!showRoastImage)}
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                >
-                  {showRoastImage ? 'Hide Image' : 'Show Image'}
-                </motion.button>
-              </div>
+            <div className="flex justify-center mt-4">
+              <motion.button 
+                className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-md transition duration-200 flex items-center gap-2 shadow-md"
+                onClick={handleTweetClick}
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+              >
+                <span className="mr-1">🐸</span> Share my Roast
+                <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </motion.button>
             </div>
           )}
         </div>
