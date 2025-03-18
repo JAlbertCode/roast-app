@@ -31,6 +31,13 @@ interface AnuraRequest {
 //   done: boolean;
 // }
 
+interface UniqueParams {
+  seed?: number
+  temperature?: number
+  personalityIndex?: number
+  styleIndex?: number
+}
+
 /**
  * Clean and format the roast text, removing any quotation marks and artifacts
  */
@@ -78,7 +85,7 @@ export const generateRoast = async (
   transactionSummary: TransactionSummary,
   walletAddress: string,
   apiKey: string,
-  uniqueParams: any = {}
+  uniqueParams: UniqueParams = {}
 ): Promise<string> => {
   try {
     // Use the provided seed or generate a random one
@@ -291,7 +298,9 @@ export const generateRoast = async (
 /**
  * Generate fallback roast when API fails
  */
-export const getRandomFallbackRoast = (uniqueParams: any = {}): string => {
+export const getRandomFallbackRoast = (
+  uniqueParams: UniqueParams = {}
+): string => {
   // Determine which set of fallbacks to use based on parameters
   const index = uniqueParams.personalityIndex || Math.floor(Math.random() * 6)
 
