@@ -99,7 +99,7 @@ const RoastImage: React.FC<RoastImageProps> = ({
       >
         <div className="relative aspect-square rounded-md overflow-hidden border-4 border-green-600 shadow-xl">
           {isLoading ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500"></div>
             </div>
           ) : image ? (
@@ -109,13 +109,13 @@ const RoastImage: React.FC<RoastImageProps> = ({
               className="w-full h-full object-cover"
             />
           ) : error ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
               <div className="w-32 h-32">
                 <BetterSirCroaksworthSvg className="w-full h-full" />
               </div>
             </div>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
               <div className="w-32 h-32">
                 <BetterSirCroaksworthSvg className="w-full h-full" />
               </div>
@@ -128,7 +128,7 @@ const RoastImage: React.FC<RoastImageProps> = ({
           </div>
         </div>
         
-        <p className="text-center text-xs mt-2 text-gray-500 dark:text-gray-400">
+        <p className="text-center text-xs mt-2 text-gray-500">
           {isLoading ? 'Generating image...' : 'Share this roast image with your tweet!'}
         </p>
       </motion.div>

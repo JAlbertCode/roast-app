@@ -61,33 +61,34 @@ Sir Croaksworth's Roast DApp is a humorous application that analyzes blockchain 
 - Fixed dark mode functionality with client-side hydration
 - Ensured wallet addresses never appear in roasts
 
-### Commit 10: API Error Handling
-- Fixed JSON parsing error in Anura API integration
-- Added improved error detection for HTML responses
-- Enhanced fallback roast system with generic options for new wallets
-- Fixed Next.js config warning about invalid postcssOptions
-- Added better error messaging in the UI
-- Fixed syntax errors in anuraService.ts
+### Commit 11: UI Simplification and Image Generation
+- Removed dark mode toggle for simplified UI
+- Removed Next.js debug button
+- Added RoastImage component for generating shareable images
+- Added toggle to show/hide generated images
+- Implemented image generation API endpoint
+- Created fallback images for when API is unavailable
 
 ## Current Status & Known Issues
 
-1. **API Integration**: The Anura API integration is in place but may need adjustments depending on the actual API responses. We've implemented robust error handling and fallbacks.
+1. **API Integration**: The Anura API integration is in place with robust error handling and fallbacks for both roast generation and image generation.
 
-2. **Dark Mode**: The dark mode toggle functionality should be working but needs more testing.
+2. **Witty Roasts**: Sir Croaksworth now produces wittier, more creative roasts with amusing frog puns and financial mockery.
 
-3. **Roast Generation**: The roast generation now produces 3 different options for users to choose from.
+3. **Image Generation**: The app now supports generating frog banker images to accompany roasts, which can be toggled on/off.
 
 4. **Multi-Chain Support**: The app automatically scans all chains for which API keys are available.
 
-5. **Client Components**: Added "use client" directives to all React components that use client-side hooks and libraries like Framer Motion.
+5. **UI Simplification**: Dark mode has been removed for a cleaner, more consistent interface.
 
 ## Next Steps
 
 1. **Testing**: Add comprehensive unit and integration tests
 2. **Deployment**: Prepare for deployment to Vercel
-3. **Loading Animations**: Add loading states and animations for better UX
-4. **Mobile Optimization**: Improve the mobile experience with better responsive design
-5. **Error Handling**: Enhance error handling for network failures and API limits
+3. **Mobile Optimization**: Improve the mobile experience with better responsive design
+4. **Analytics**: Add usage tracking to monitor popular features
+5. **Social Integration**: Expand social sharing options beyond Twitter
+6. **Image Gallery**: Create a gallery of recent roasts and generated images
 
 ## Environment Requirements
 

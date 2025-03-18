@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SirCroaksworth from './components/SirCroaksworth';
 import SpeechBubble from './components/SpeechBubble';
-import DarkModeToggle from './components/DarkModeToggle';
 import RoastImage from './components/RoastImage';
 import { TransactionSummary } from './utils/etherscanService';
 
@@ -104,13 +103,12 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen p-6 sm:p-8 bg-gradient-to-b from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="flex flex-col items-center min-h-screen p-6 sm:p-8 bg-gradient-to-b from-green-50 to-blue-50">
       <header className="w-full max-w-4xl mb-6 sm:mb-8 mt-6 sm:mt-10">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl sm:text-4xl font-bold text-green-800 dark:text-green-400">Sir Croaksworth&apos;s Roast DApp</h1>
-          <DarkModeToggle />
+          <h1 className="text-3xl sm:text-4xl font-bold text-green-800">Sir Croaksworth&apos;s Roast DApp</h1>
         </div>
-        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 text-center sm:text-left">
+        <p className="text-base sm:text-lg text-gray-600 text-center sm:text-left">
           Get your wallet transactions roasted by the most savage frog banker on the blockchain
         </p>
       </header>
@@ -137,12 +135,12 @@ export default function Home() {
           {/* Roast selector - only show if multiple roasts are generated */}
           {roasts.length > 0 && !isRoasting && (
             <div className="mt-4 flex flex-col items-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Choose your favorite roast:</p>
+              <p className="text-sm text-gray-600 mb-2">Choose your favorite roast:</p>
               <div className="flex space-x-2">
                 {roasts.map((_, index) => (
                   <button
                     key={index}
-                    className={`w-8 h-8 flex items-center justify-center rounded-full ${selectedRoastIndex === index ? 'bg-green-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
+                    className={`w-8 h-8 flex items-center justify-center rounded-full ${selectedRoastIndex === index ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}`}
                     onClick={() => handleRoastSelection(index)}
                   >
                     {index + 1}
@@ -152,24 +150,46 @@ export default function Home() {
             </div>
           )}
           
-          {/* Twitter share button (only show if a roast has been generated) */}
+          {/* Twitter share button and roast image (only show if a roast has been generated) */}
           {roastText && !isRoasting && roastText !== "Ribbit! Paste your wallet address and I'll roast your financial decisions like they're flies on a lily pad!" && (
-            <div className="flex justify-center mt-4">
-              <motion.button 
-                className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-md transition duration-200 flex items-center gap-2 shadow-md"
-                onClick={handleTweetClick}
-                variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-              >
-                <span className="mr-1">🐸</span> Share my Roast
-                <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </motion.button>
+            <div className="flex flex-col items-center mt-4">
+              {/* Roast Image */}
+              <RoastImage 
+                roast={roastText} 
+                walletCategory={walletSize}
+                transactionSummary={transactionSummary || undefined}
+                isVisible={showRoastImage}
+              />
+
+              {/* Share Button */}
+              <div className="flex justify-center mt-4">
+                <motion.button 
+                  className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-md transition duration-200 flex items-center gap-2 shadow-md"
+                  onClick={handleTweetClick}
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                >
+                  <span className="mr-1">🐸</span> Share my Roast
+                  <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </motion.button>
+                
+                {/* Toggle Roast Image Button */}
+                <motion.button
+                  className={`ml-2 py-3 px-4 rounded-md transition duration-200 flex items-center shadow-md ${showRoastImage ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
+                  onClick={() => setShowRoastImage(!showRoastImage)}
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                >
+                  {showRoastImage ? 'Hide Image' : 'Show Image'}
+                </motion.button>
+              </div>
             </div>
           )}
         </div>
@@ -185,7 +205,7 @@ export default function Home() {
             <input 
               type="text" 
               placeholder="Paste your wallet address (0x...) - We'll check all chains" 
-              className="flex-grow p-3 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-800 dark:text-white"
+              className="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               value={walletAddress}
               onChange={(e) => setWalletAddress(e.target.value)}
               disabled={isRoasting}
@@ -206,7 +226,7 @@ export default function Home() {
         </div>
       </main>
       
-      <footer className="mt-auto py-6 text-center text-gray-500 dark:text-gray-400 text-sm">
+      <footer className="mt-auto py-6 text-center text-gray-500 text-sm">
         <p>Powered by Lilypad Network and Anura API</p>
       </footer>
     </div>

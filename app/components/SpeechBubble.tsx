@@ -21,10 +21,10 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
 
   // Position styles for the speech bubble pointer
   const pointerStyles = {
-    top: 'absolute h-4 w-4 bg-white dark:bg-gray-700 transform rotate-45 -top-2 left-1/2 -ml-2',
-    bottom: 'absolute h-4 w-4 bg-white dark:bg-gray-700 transform rotate-45 -bottom-2 left-1/2 -ml-2',
-    left: 'absolute h-4 w-4 bg-white dark:bg-gray-700 transform rotate-45 top-1/2 -left-2 -mt-2',
-    right: 'absolute h-4 w-4 bg-white dark:bg-gray-700 transform rotate-45 top-1/2 -right-2 -mt-2',
+    top: 'absolute h-4 w-4 bg-white transform rotate-45 -top-2 left-1/2 -ml-2',
+    bottom: 'absolute h-4 w-4 bg-white transform rotate-45 -bottom-2 left-1/2 -ml-2',
+    left: 'absolute h-4 w-4 bg-white transform rotate-45 top-1/2 -left-2 -mt-2',
+    right: 'absolute h-4 w-4 bg-white transform rotate-45 top-1/2 -right-2 -mt-2',
   };
 
   // Animation variants for speech bubble
@@ -111,9 +111,9 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
         exit="exit"
         variants={bubbleVariants}
       >
-        <div className="p-4 bg-white dark:bg-gray-700 rounded-xl shadow-md">
+        <div className="p-4 bg-white rounded-xl shadow-md">
           <div className={pointerStyles[position]}></div>
-          <p className="text-gray-800 dark:text-gray-200 whitespace-pre-line">
+          <p className="text-gray-800 whitespace-pre-line">
             {isTyping ? displayText : text}
             {isTyping && currentIndex < text.length && (
               <motion.span 

@@ -23,9 +23,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="light">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>{`
+          /* Hide Next.js debug button */
+          #__next-build-watcher,
+          .__next-build-watcher,
+          #nextjs-portal {
+            display: none !important;
+          }
+        `}</style>
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 text-gray-900`}
         suppressHydrationWarning
       >
         {children}
