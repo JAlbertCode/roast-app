@@ -208,7 +208,7 @@ export const generateRoast = async (
       // Look for content directly in the stream
       const contentMatch = responseText.match(/"content":"(.*?)"(,|\})/s);
       if (contentMatch && contentMatch[1]) {
-        let content = contentMatch[1].trim();
+        const content = contentMatch[1].trim();
         return cleanRoastText(content);
       }
       
