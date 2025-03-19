@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import BetterSirCroaksworthSvg from './icons/BetterSirCroaksworthSvg';
 
 interface SirCroaksworthProps {
@@ -14,7 +14,7 @@ const SirCroaksworth: React.FC<SirCroaksworthProps> = ({
   walletSize = 'average'
 }) => {
   // Animation variants for different states
-  const characterVariants = {
+  const characterVariants: Variants = {
     idle: { 
       scale: 1,
       rotate: 0
@@ -23,7 +23,7 @@ const SirCroaksworth: React.FC<SirCroaksworthProps> = ({
       scale: [1, 1.03, 1, 1.03, 1],
       transition: { 
         repeat: Infinity,
-        duration: 1.5,
+        duration: 1.5
       }
     },
     wealthy: {
@@ -39,7 +39,7 @@ const SirCroaksworth: React.FC<SirCroaksworthProps> = ({
       x: [0, -2, 0, 2, 0],
       transition: { 
         repeat: Infinity,
-        repeatType: "mirror",
+        repeatType: "mirror" as const,  // Use 'as const' to specify exact literal type
         duration: 1.2
       }
     }
