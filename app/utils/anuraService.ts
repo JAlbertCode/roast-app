@@ -1,5 +1,6 @@
 // Anura API Service for AI roast generation
 import { TransactionSummary } from './etherscanService'
+import { ChainId } from './chains/types'
 
 interface AnuraMessage {
   role: 'system' | 'user' | 'assistant'
@@ -117,7 +118,7 @@ export const generateRoast = async (
     JUST GIVE THE ROAST LINE WITH NO QUOTES.`
 
     // Get the chain information
-    const chain = transactionSummary.chain || 'ethereum'
+    const chain = transactionSummary.chain || 'ethereum' as ChainId
     const chainSymbol =
       chain === 'ethereum'
         ? 'ETH'
@@ -142,7 +143,7 @@ export const generateRoast = async (
     // Direct, transaction-focused prompt
     const userPrompt = `SAVAGE ROAST FOR THIS WALLET'S TRANSACTIONS:
     
-    CHAIN: ${chain.toUpperCase()}
+    CHAIN: ${(chain as string).toUpperCase()}
     TOKENS TRADED: ${
       transactionSummary.topTokensTraded.length > 0
         ? transactionSummary.topTokensTraded.map((t) => t.symbol).join(', ')

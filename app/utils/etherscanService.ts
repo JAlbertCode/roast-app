@@ -1,4 +1,5 @@
 // Etherscan API Service
+import { ChainId } from './chains/types';
 
 // Types for transaction data
 export interface Transaction {
@@ -29,6 +30,7 @@ export interface TransactionSummary {
   failedTransactions: number;
   successRate: number;
   daysInactive?: number;
+  chain?: ChainId; // Add the chain property with ChainId type
 }
 
 /**
