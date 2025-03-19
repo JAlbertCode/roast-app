@@ -153,9 +153,11 @@ export default function Home() {
           setRoastText(data.roasts[0])
         }
         setWalletSize(data.walletCategory || 'average')
-      } catch (fetchError) {
+      } catch (fetchErr) {
         // Check if this was an abort error (timeout)
-        if (fetchError.name === 'AbortError') {
+        const fetchError = fetchErr as Error;
+        if ((fetchError instanceof DOMException && fetchError.name === 'AbortError') ||
+            (fetchError.name === 'AbortError')) {
           throw new Error('The request timed out after 65 seconds. Try a different wallet with fewer transactions.')
         }
         throw fetchError
