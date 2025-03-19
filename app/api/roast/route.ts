@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import { generateRoast, getRandomFallbackRoast } from '../../utils/anuraService';
 import { getAllChainsData } from '../../utils/getAllChainData';
 
+// Define interface for roast result including isFallback property
+interface RoastResult {
+  text: string;
+  error: boolean;
+  errorMessage?: string;
+  isFallback?: boolean; // Add this property to the type
+}
+
 // Load environment variables
 const ANURA_API_KEY = process.env.ANURA_API_KEY || '';
 
@@ -58,7 +66,7 @@ export async function POST(request: Request) {
       };
       
       // Create a promise that adds a slight delay between requests
-      const roastPromise = new Promise<{ text: string, error: boolean, errorMessage?: string }>(async (resolve) => {
+      const roastPromise = new Promise<RoastResult>(async (resolve) => {
         // Delay to ensure different random seeds
         if (i > 0) {
           await new Promise(r => setTimeout(r, uniqueParams.timeout as number));
@@ -80,7 +88,7 @@ export async function POST(request: Request) {
             text: fallbackRoast, 
             error: false, // Mark as not error so UI still displays it normally
             errorMessage: error.message,
-            isFallback: true
+            isFallback: true // Now included in our type definition
           });
         }
       });
@@ -93,7 +101,7 @@ export async function POST(request: Request) {
     
     // Extract roasts and errors from results
     const roasts = results.map(result => result.text);
-    const errors = results.filter(result => result.error).map(result => result.errorMessage);
+    const errors = results.filter(result => result.error).map(result => result.errorMessage || 'Unknown error');
     
     // Return the results - including any errors that occurred
     return NextResponse.json({
@@ -124,7 +132,7 @@ export async function POST(request: Request) {
         errorCount: 1,
         errors: [err.message],
         roasts: fallbackRoasts,
-        isFallback: true,
+        isFallback: true, // Added back in since we have the type definition now
         walletCategory: 'average',
         summary: {
           totalTransactions: 0,

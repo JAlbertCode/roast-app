@@ -36,6 +36,7 @@ interface UniqueParams {
   temperature?: number
   personalityIndex?: number
   styleIndex?: number
+  themeIndex?: number
 }
 
 /**
@@ -195,98 +196,193 @@ export const generateRoast = async (
       },
     }
 
-    // Make the API request
-    const response = await fetch(
-      'https://anura-testnet.lilypad.tech/api/v1/chat/completions',
-      {
+    // Define API URL (with fallback)
+    const apiUrl = 'https://anura-testnet.lilypad.tech/api/v1/chat/completions';
+    console.log(`Making API request to: ${apiUrl}`);
+    
+    // Create an AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+    
+    try {
+      // Make the API request
+      const response = await fetch(
+        apiUrl,
+        {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json', // Explicitly request JSON format
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify(requestPayload),
+        signal: controller.signal
       }
-    )
-
-    if (!response.ok) {
-      // Print the full error details to help debug API issues
-      console.error('API Error Details:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-        url: response.url,
-      })
-      throw new Error(`API Error: ${response.status} ${response.statusText}`)
-    }
-
-    // Try to parse the response
-    const responseText = await response.text()
-
-    // Log the raw response for debugging
-    console.log(
-      'RAW RESPONSE TEXT (first 200 chars):',
-      responseText.substring(0, 200)
-    )
-
-    // Check if we got an event stream response (despite asking for non-streaming)
-    if (responseText.includes('event:') || responseText.includes('data:')) {
-      // This is a server-sent event stream
-      console.log('Detected event stream response')
-
-      // Look for completion data in the stream
-      const completionMatch = responseText.match(
-        /data:\s*\{"model":.*?"message".*?\}/s
       )
-      if (completionMatch && completionMatch[0]) {
-        try {
-          // Extract just the JSON part after "data:"
-          const jsonText = completionMatch[0].replace(/^data:\s*/, '')
-          const data = JSON.parse(jsonText)
 
-          if (data.message && data.message.content) {
-            return cleanRoastText(data.message.content)
+      if (!response.ok) {
+        // Print the full error details to help debug API issues
+        console.error('API Error Details:', {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          url: response.url,
+        })
+        throw new Error(`API Error: ${response.status} ${response.statusText}`)
+      }
+
+      // Clear the timeout since we got a response
+      clearTimeout(timeoutId);
+
+      // Log response status for debugging
+      console.log(`Anura API Response Status: ${response.status} ${response.statusText}`)
+      console.log(`Response Headers:`, Object.fromEntries(response.headers.entries()))
+      
+      // Try to parse the response
+      const responseText = await response.text()
+
+      // Log the raw response for debugging
+      console.log(
+        'RAW RESPONSE TEXT (first 200 chars):',
+        responseText.substring(0, 200)
+      )
+
+      // Check if we got an event stream response (despite asking for non-streaming)
+      if (responseText.includes('event:') || responseText.includes('data:')) {
+        // This is a server-sent event stream
+        console.log('Detected event stream response')
+        
+        let combinedContent = '';
+      
+        // Split into individual events
+        const events = responseText.split('\n\n').filter(event => event.trim());
+        console.log(`Found ${events.length} events in stream`);
+        
+        // Process all events to extract content
+        for (const event of events) {
+          // Look for delta events with content
+          if (event.includes('event: delta') && event.includes('data:')) {
+            try {
+              // Extract the JSON data part
+              const dataMatch = event.match(/data: (\{.*\})/s);
+              if (dataMatch && dataMatch[1]) {
+                const deltaData = JSON.parse(dataMatch[1]);
+                
+                // Extract content from the delta
+                if (deltaData.message && deltaData.message.content) {
+                  combinedContent += deltaData.message.content;
+                }
+              }
+            } catch (err) {
+              console.error('Error parsing delta event:', err);
+            }
           }
-        } catch (err) {
-          console.error('Error parsing completion data:', err)
         }
-      }
+        
+        // If we extracted content from the deltas, use it
+        if (combinedContent) {
+          return cleanRoastText(combinedContent);
+        }
+        
+        // Fallback to extraction methods for other formats
+        
+        // Look for completion data in the stream
+        const completionMatch = responseText.match(
+          /data:\s*\{"model":.*?"message".*?\}/s
+        )
+        if (completionMatch && completionMatch[0]) {
+          try {
+            // Extract just the JSON part after "data:"
+            const jsonText = completionMatch[0].replace(/^data:\s*/, '')
+            const data = JSON.parse(jsonText)
 
-      // Look for content directly in the stream
-      const contentMatch = responseText.match(/"content":"(.*?)"(,|\})/s)
-      if (contentMatch && contentMatch[1]) {
-        const content = contentMatch[1].trim()
-        return cleanRoastText(content)
-      }
+            if (data.message && data.message.content) {
+              return cleanRoastText(data.message.content)
+            }
+          } catch (err) {
+            console.error('Error parsing completion data:', err)
+          }
+        }
 
-      // Check for explicit error messages
-      const errorMatch = responseText.match(
-        /error response from server: (.*?)($|\n)/s
-      )
-      if (errorMatch && errorMatch[1]) {
-        throw new Error(`Anura API error: ${errorMatch[1]}`)
-      }
+        // Look for content directly in the stream
+        const contentMatch = responseText.match(/"content":"(.*?)"(,|\})/s)
+        if (contentMatch && contentMatch[1]) {
+          const content = contentMatch[1].trim()
+          return cleanRoastText(content)
+        }
 
-      // If we get here, try to salvage something from the response
-      return `Sir Croaksworth seems tongue-tied today. Try again or check your wallet address.`
+        // Check for explicit error messages
+        const errorMatch = responseText.match(
+          /error response from server: (.*?)($|\n)/s
+        )
+        if (errorMatch && errorMatch[1]) {
+          throw new Error(`Anura API error: ${errorMatch[1]}`)
+        }
+
+        // If we get here, try to salvage something from the response
+        console.error('Could not extract content from event stream');
+        throw new Error('Failed to parse streaming response from API');
     }
 
     // Try to parse as a regular JSON response
     try {
       const data = JSON.parse(responseText)
+      console.log('Parsed API response data:', JSON.stringify(data).substring(0, 300))
 
+      // Handle different possible response formats:
+      
+      // Format 1: Anura API standard format
       if (data.message && data.message.content) {
         return cleanRoastText(data.message.content)
-      } else if (data.choices && data.choices[0] && data.choices[0].text) {
-        // Handle possible completion format
-        return cleanRoastText(data.choices[0].text)
-      } else {
-        console.error('Unexpected response format:', data)
-        throw new Error('Unexpected response format from API')
+      } 
+      // Format 2: OpenAI-compatible completion format
+      else if (data.choices && data.choices[0]) {
+        if (data.choices[0].text) {
+          return cleanRoastText(data.choices[0].text)
+        } else if (data.choices[0].message && data.choices[0].message.content) {
+          return cleanRoastText(data.choices[0].message.content)
+        }
       }
+      // Format 3: Possible simple text in content field
+      else if (data.content) {
+        return cleanRoastText(data.content)
+      }
+      // Format 4: Any text field that might contain the response
+      else {
+        // Try to find any plausible content field
+        for (const key of Object.keys(data)) {
+          if (typeof data[key] === 'string' && data[key].length > 20) {
+            return cleanRoastText(data[key])
+          } else if (data[key] && typeof data[key] === 'object') {
+            for (const subKey of Object.keys(data[key])) {
+              if (['content', 'text', 'response', 'result'].includes(subKey) && 
+                  typeof data[key][subKey] === 'string') {
+                return cleanRoastText(data[key][subKey])
+              }
+            }
+          }
+        }
+      }
+      
+      console.error('Unexpected response format:', data)
+      throw new Error('Could not extract roast text from API response')
     } catch (parseError) {
       console.error('Error parsing response:', parseError)
       console.error('Response text:', responseText.substring(0, 500))
       throw new Error(`Failed to parse API response: ${parseError.message}`)
+      }
+    } catch (fetchError) {
+      // Clear the timeout
+      clearTimeout(timeoutId);
+      
+      // Check if this was a timeout
+      if (fetchError.name === 'AbortError') {
+        console.error('API request timed out after 15 seconds');
+        throw new Error('API request timed out. Please try again.');
+      }
+      
+      // Re-throw other errors
+      throw fetchError;
     }
   } catch (error) {
     // Log the full error and re-throw it
