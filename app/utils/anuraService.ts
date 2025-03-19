@@ -152,7 +152,7 @@ export const generateRoast = async (
     WALLET VALUE: ${walletValueFormatted}
     TOTAL TX COUNT: ${transactionSummary.totalTransactions} 
     FAILED TX COUNT: ${transactionSummary.failedTransactions}
-    INACTIVE DAYS: ${transactionSummary.daysInactive || 0}
+    INACTIVE DAYS: ${transactionSummary.daysInactive ?? 0}
     
     SPECIAL NOTES:
     ${
@@ -170,9 +170,9 @@ export const generateRoast = async (
         : ''
     }
     ${parseFloat(transactionSummary.totalValue) < 0.01 ? '- Almost empty wallet' : ''}
-    ${transactionSummary.daysInactive > 30 ? '- Abandoned wallet' : ''}
+    ${transactionSummary.daysInactive && transactionSummary.daysInactive > 30 ? '- Abandoned wallet' : ''}
     ${
-      transactionSummary.failedTransactions > 3
+      transactionSummary.failedTransactions && transactionSummary.failedTransactions > 3
         ? '- Lots of failed transactions'
         : ''
     }
