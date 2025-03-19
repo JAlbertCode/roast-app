@@ -22,6 +22,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [progressCounter, setProgressCounter] = useState<number>(0)
   const [loadingStage, setLoadingStage] = useState<number>(0)
+  const [useOptimizeMode, setUseOptimizeMode] = useState<boolean>(false)
 
   // Remove development tools
   useEffect(() => {
@@ -111,43 +112,75 @@ export default function Home() {
     try {
       // Call our enhanced API endpoint that uses the 60-second timeout
       console.log('Calling roast-pro endpoint with extended timeout...')
-      const response = await fetch('/api/roast-pro', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ walletAddress }),
-      })
+      
+      // Set up an AbortController with a timeout slightly longer than Vercel's limit
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 65000) // 65 seconds
+      
+      try {
+        const response = await fetch('/api/roast-pro', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(useOptimizeMode ? { 'x-optimize-mode': 'true' } : {})
+          },
+          body: JSON.stringify({ walletAddress }),
+          signal: controller.signal
+        })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Error generating roast')
+        // Clear the timeout since we got a response
+        clearTimeout(timeoutId)
+
+        if (!response.ok) {
+          // If we get a 504 specifically, it's a timeout
+          if (response.status === 504) {
+            throw new Error('The request timed out. Vercel has a 60-second limit for API responses.')
+          }
+          
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Error generating roast')
+        }
+
+        const data = await response.json()
+        console.log('Roast generated successfully in', data.processingTime, 'seconds')
+
+        // Reset selected roast index
+        setSelectedRoastIndex(0)
+
+        // Update state with the roasts and wallet category
+        setRoasts(data.roasts || [])
+        if (data.roasts && data.roasts.length > 0) {
+          setRoastText(data.roasts[0])
+        }
+        setWalletSize(data.walletCategory || 'average')
+      } catch (fetchError) {
+        // Check if this was an abort error (timeout)
+        if (fetchError.name === 'AbortError') {
+          throw new Error('The request timed out after 65 seconds. Try a different wallet with fewer transactions.')
+        }
+        throw fetchError
       }
-
-      const data = await response.json()
-      console.log('Roast generated successfully in', data.processingTime, 'seconds')
-
-      // Reset selected roast index
-      setSelectedRoastIndex(0)
-
-      // Update state with the roasts and wallet category
-      setRoasts(data.roasts || [])
-      if (data.roasts && data.roasts.length > 0) {
-        setRoastText(data.roasts[0])
-      }
-      setWalletSize(data.walletCategory || 'average')
     } catch (err) {
       const error = err as Error
       console.error('Error:', error)
-      // Set a user-friendly error message
-      setError(
-        error.message && error.message.includes('JSON')
-          ? 'Network error communicating with Anura API. Please try again later.'
-          : 'Failed to generate roast. Try again later.'
-      )
-      setRoastText(
-        "My connections to the blockchain appear to be offline. Even your wallet isn't worth this much trouble."
-      )
+      
+      // Specific error handling for timeouts
+      if (error.message.includes('timed out')) {
+        setError('The request took too long to process. This can happen with complex wallets. Try a wallet with fewer transactions.')
+        setRoastText(
+          "This wallet has too many transactions for me to process. Try a simpler wallet or one with fewer transactions."
+        )
+      } else {
+        // Set a user-friendly error message for other errors
+        setError(
+          error.message && error.message.includes('JSON')
+            ? 'Network error communicating with Anura API. Please try again later.'
+            : error.message || 'Failed to generate roast. Try again later.'
+        )
+        setRoastText(
+          "My connections to the blockchain appear to be offline. Even your wallet isn't worth this much trouble."
+        )
+      }
     } finally {
       setIsRoasting(false)
       clearInterval(progressInterval)
@@ -290,6 +323,25 @@ export default function Home() {
         {error && (
           <div className="w-full max-w-xl mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
             {error}
+            
+            {error.includes('took too long') && (
+              <div className="mt-4 flex justify-center">
+                <motion.button
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-md transition duration-200 flex items-center gap-2"
+                  onClick={() => {
+                    setUseOptimizeMode(true);
+                    handleRoastClick();
+                  }}
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <span className="mr-1">⚡</span> Retry in Fast Mode
+                </motion.button>
+              </div>
+            )}
           </div>
         )}
 

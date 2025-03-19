@@ -76,6 +76,13 @@ function cleanRoastText(content: string): string {
   cleanedText = cleanedText.replace(/"/g, '')
   cleanedText = cleanedText.replace(/"/g, '')
   cleanedText = cleanedText.replace(/'/g, "'")
+  
+  // Convert token tickers to lowercase
+  const tokenTickers = ['ETH', 'BTC', 'UNI', 'SUSHI', 'PEPE', 'SHIB', 'DOGE', 'FLOKI', 'BONK', 'CAKE', 'CRV', 'AAVE', 'MATIC', 'ARB', 'OP', 'LINK', 'DAI', 'USDC', 'USDT'];
+  tokenTickers.forEach(ticker => {
+    const pattern = new RegExp(`\\b${ticker}\\b`, 'g');
+    cleanedText = cleanedText.replace(pattern, ticker.toLowerCase());
+  });
 
   return cleanedText.trim()
 }
@@ -94,26 +101,28 @@ export const generateRoast = async (
     const randomSeed = uniqueParams.seed || Math.floor(Math.random() * 1000000)
 
     // Construct a concise, purely funny roast prompt
-    const systemPrompt = `You are Sir Croaksworth, a savage frog banker who BRUTALLY roasts crypto wallets with hilarious, shareable insults.
+    const systemPrompt = `You are Sir Croaksworth, a savage banker who BRUTALLY roasts crypto wallets with hilarious, shareable insults.
     
     GIVE ONE PERFECT ROAST WITH NO EXTRA TEXT - NO explanations, NO lead-ins, NO quotes.
     
     Write as a mean comedian delivering a perfect one-liner about terrible financial decisions:
-    - Be specific about their actual tokens/transactions
-    - Use frog-related puns when possible
+    - Be SPECIFIC about their actual tokens/transactions
+    - Prioritize references to their real wallet activity over generic jokes
+    - Call out specific trades, NFTs, or patterns in their wallet
+    - IMPORTANT: Don't capitalize token names or tickers - write them in lowercase (e.g., "eth" not "ETH", "uni" not "UNI")
     - Be EXTREMELY witty, ruthlessly funny and HIGHLY SHAREABLE
     - Keep it under 180 characters
     - DO NOT use quotation marks at all
-    - Don't include technical jargon
-    - Don't say "AI trader", "AI tokens", or similar AI references
+    - Frog puns are optional and secondary to wallet-specific jokes
     - Direct insult to "you" (the wallet owner) - not in third person
     - Make the insult clever, unexpected and biting
     
-    BAD EXAMPLE: "An average Ethereum wallet holding some tokens... And here's your average trader:"
     BAD EXAMPLE: "Your wallet has the sophistication of a tadpole with a calculator."
+    BAD EXAMPLE: "I see you like trading. Ribbit ribbit, that's frog for 'you're bad at this.'"
+    BAD EXAMPLE: "Your UNI trades scream poor decisions." (UNI should be lowercase as "uni")
     
-    GOOD EXAMPLE: Your DeFi strategy has the sophistication of a tadpole with a calculator. Those UNI trades scream 'I read half an article once and went all in.'
-    GOOD EXAMPLE: Calling your wallet an investment portfolio is like calling a dumpster a five-star restaurant - insulting to dumpsters everywhere.
+    GOOD EXAMPLE: Your uni trades scream 'I read half an article once and went all in.' That 80% slippage tolerance explains your net worth better than your resume ever could.
+    GOOD EXAMPLE: Calling those shib transactions an 'investment strategy' is like calling a dumpster fire a BBQ. At least a dumpster fire keeps you warm.
     
     JUST GIVE THE ROAST LINE WITH NO QUOTES.`
 
@@ -159,23 +168,25 @@ export const generateRoast = async (
       transactionSummary.topTokensTraded.some((t) =>
         ['PEPE', 'SHIB', 'DOGE', 'FLOKI', 'BONK'].includes(t.symbol)
       )
-        ? '- Trades meme coins'
+        ? '- Trades meme coins (mention specific coins like pepe, shib, etc. in lowercase)'
         : ''
     }
     ${
       transactionSummary.topTokensTraded.some((t) =>
         ['UNI', 'SUSHI', 'CAKE', 'CRV'].includes(t.symbol)
       )
-        ? '- Uses DeFi exchanges'
+        ? '- Uses DeFi exchanges (mention specific tokens like uni, sushi, etc. in lowercase)'
         : ''
     }
-    ${parseFloat(transactionSummary.totalValue) < 0.01 ? '- Almost empty wallet' : ''}
-    ${transactionSummary.daysInactive && transactionSummary.daysInactive > 30 ? '- Abandoned wallet' : ''}
+    ${parseFloat(transactionSummary.totalValue) < 0.01 ? '- Almost empty wallet (mock their poverty)' : ''}
+    ${transactionSummary.daysInactive && transactionSummary.daysInactive > 30 ? '- Abandoned wallet (make fun of giving up or paper hands)' : ''}
     ${
       transactionSummary.failedTransactions && transactionSummary.failedTransactions > 3
-        ? '- Lots of failed transactions'
+        ? '- Lots of failed transactions (mock their technical incompetence)'
         : ''
     }
+    
+    REMEMBER: Write all token names in lowercase (eth, btc, uni, etc.), not uppercase.
     
     GIVE ONE PERFECT ROAST LINE - NO QUOTATION MARKS - NO EXPLANATIONS. MAKE IT EXTREMELY FUNNY AND SHAREABLE.`
 
@@ -403,23 +414,23 @@ export const getRandomFallbackRoast = (
 
   // Different sets of fallbacks for variety
   const fallbackSets = [
-    // Set 1: General mockery
+    // Set 1: Trading strategy mockery
     [
       'Your crypto strategy is just a toddler playing Jenga with your savings. At least the toddler knows when things are about to collapse.',
       'If disappointment had a blockchain address, it would be yours. Even your failed transactions are embarrassed by you.',
       'Calling your wallet an investment portfolio is like calling a dumpster a five-star restaurant. Both leave you broke and confused.',
     ],
-    // Set 2: Financial mockery
+    // Set 2: Financial decision mockery
     [
       "Your wallet screams 'I read half a CoinDesk article once.' Congrats on funding some crypto bro's new yacht.",
-      'Your transaction history looks like a squirrel with a calculator. Chaotic button pressing with zero strategy.',
+      'Your transaction history looks like someone with a calculator having a seizure. Chaotic button pressing with zero strategy.',
       "The gas fees you've wasted could have paid for therapy to explore why you make such terrible decisions.",
     ],
-    // Set 3: Frog-themed
+    // Set 3: Token-specific
     [
-      "Even tadpoles have better financial instincts than whatever frog-brained strategy you're attempting. Ribbit ribbit... that's frog for 'why?'",
-      "Croaking unimpressed. Your wallet's less appealing than a dried-up lily pad in toxic waste. At least that might create a superhero.",
-      "I've seen more impressive portfolios from a frog that accidentally sat on a hardware wallet. At least that was an accident.",
+      "Your meme coin addiction is just gambling with extra steps and worse odds. Vegas would at least comp you a drink for those losses.",
+      "That stablecoin hoarding strategy is peak 'I'm scared of real investing but also inflation.' Have you considered buying literal mattress stuffing instead?",
+      "Your DEX swaps have all the coherence of a drunk person trying to order at a drive-thru. 'I'll have... no wait... actually...'"
     ],
     // Set 4: Witty insults
     [
@@ -433,10 +444,10 @@ export const getRandomFallbackRoast = (
       'Your portfolio has the stability of a one-legged flamingo on an ice rink during an earthquake. Impressively bad.',
       "Looking at your transactions is like watching someone fight fire with gasoline while calling it 'innovative firefighting.'",
     ],
-    // Set 6: Random but funny
+    // Set 6: Chain-specific
     [
       "If your wallet could speak, it would file for emancipation. No digital entity deserves the abuse you've put it through.",
-      "I've seen more coherent investment strategies from a drunk Magic 8-Ball. 'Outlook not so good' is an understatement.",
+      "You've spent more on failed transactions than most people spend on coffee in a year. Have you considered just burning money directly? It's more efficient.",
       'Your crypto journey is what happens when FOMO meets YOLO and they have an ugly baby called BROKE-O.',
     ],
   ]

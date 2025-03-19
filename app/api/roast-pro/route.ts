@@ -3,7 +3,7 @@ import { generateRoast, getRandomFallbackRoast } from '../../utils/anuraService'
 import { getAllChainsData } from '../../utils/getAllChainData';
 
 // Configure for Vercel Pro's 60-second timeout
-export const runtime = 'edge';  // Use Edge runtime for better performance
+export const runtime = 'nodejs';
 export const maxDuration = 60;  // Maximum 60 seconds (available with Vercel Pro)
 
 // Define interface for roast result
@@ -56,9 +56,12 @@ export async function POST(request: Request) {
     
     console.log(`Chain data fetched in ${(Date.now() - startTime)/1000}s, generating roasts...`);
     
-    // Generate multiple roasts (3 of them)
+    // Check if we should use optimization mode (for faster response)
+    const optimizeMode = request.headers.get('x-optimize-mode') === 'true';
+    
+    // Generate multiple roasts (3 in normal mode, 1 in optimize mode)
     const roastPromises = [];
-    const numberOfRoasts = 3;
+    const numberOfRoasts = optimizeMode ? 1 : 3;
     
     // Create multiple roast promises with distinct parameters
     for (let i = 0; i < numberOfRoasts; i++) {
