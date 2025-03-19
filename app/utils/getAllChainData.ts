@@ -124,7 +124,8 @@ export const getAllChainsData = async (walletAddress: string): Promise<{
     
     // Set days inactive to minimum across all chains
     if (aggregatedSummary.daysInactive === 0 || 
-        (summary.daysInactive && summary.daysInactive < aggregatedSummary.daysInactive)) {
+        (summary.daysInactive !== undefined && aggregatedSummary.daysInactive !== undefined && 
+         summary.daysInactive < aggregatedSummary.daysInactive)) {
       aggregatedSummary.daysInactive = summary.daysInactive;
     }
   });
