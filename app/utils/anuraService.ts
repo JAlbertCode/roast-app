@@ -265,7 +265,7 @@ export const generateRoast = async (
           if (event.includes('event: delta') && event.includes('data:')) {
             try {
               // Extract the JSON data part
-              const dataMatch = event.match(/data: (\{.*\})/s);
+              const dataMatch = event.match(/data: (\{[\s\S]*\})/);
               if (dataMatch && dataMatch[1]) {
                 const deltaData = JSON.parse(dataMatch[1]);
                 
@@ -289,7 +289,7 @@ export const generateRoast = async (
         
         // Look for completion data in the stream
         const completionMatch = responseText.match(
-          /data:\s*\{"model":.*?"message".*?\}/s
+          /data:\s*\{"model":[\s\S]*?"message"[\s\S]*?\}/
         )
         if (completionMatch && completionMatch[0]) {
           try {
@@ -306,7 +306,7 @@ export const generateRoast = async (
         }
 
         // Look for content directly in the stream
-        const contentMatch = responseText.match(/"content":"(.*?)"(,|\})/s)
+        const contentMatch = responseText.match(/"content":"([\s\S]*?)"(,|\})/)
         if (contentMatch && contentMatch[1]) {
           const content = contentMatch[1].trim()
           return cleanRoastText(content)
@@ -314,7 +314,7 @@ export const generateRoast = async (
 
         // Check for explicit error messages
         const errorMatch = responseText.match(
-          /error response from server: (.*?)($|\n)/s
+          /error response from server: ([\s\S]*?)($|\n)/
         )
         if (errorMatch && errorMatch[1]) {
           throw new Error(`Anura API error: ${errorMatch[1]}`)
