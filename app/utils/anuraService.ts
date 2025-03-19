@@ -367,23 +367,23 @@ export const generateRoast = async (
       
       console.error('Unexpected response format:', data)
       throw new Error('Could not extract roast text from API response')
-    } catch (parseError) {
-      console.error('Error parsing response:', parseError)
+    } catch (error) {
+      console.error('Error parsing response:', error)
       console.error('Response text:', responseText.substring(0, 500))
-      throw new Error(`Failed to parse API response: ${parseError.message}`)
+      throw new Error(`Failed to parse API response: ${error instanceof Error ? error.message : String(error)}`)
       }
-    } catch (fetchError) {
+    } catch (error) {
       // Clear the timeout
       clearTimeout(timeoutId);
       
       // Check if this was a timeout
-      if (fetchError.name === 'AbortError') {
+      if (error instanceof Error && error.name === 'AbortError') {
         console.error('API request timed out after 15 seconds');
         throw new Error('API request timed out. Please try again.');
       }
       
       // Re-throw other errors
-      throw fetchError;
+      throw error;
     }
   } catch (error) {
     // Log the full error and re-throw it
