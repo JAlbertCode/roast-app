@@ -169,7 +169,7 @@ export const generateRoast = async (
         ? '- Uses DeFi exchanges'
         : ''
     }
-    ${transactionSummary.totalValue < 0.01 ? '- Almost empty wallet' : ''}
+    ${parseFloat(transactionSummary.totalValue) < 0.01 ? '- Almost empty wallet' : ''}
     ${transactionSummary.daysInactive > 30 ? '- Abandoned wallet' : ''}
     ${
       transactionSummary.failedTransactions > 3
