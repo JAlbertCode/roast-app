@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import SirCroaksworth from './components/SirCroaksworth'
 import SpeechBubble from './components/SpeechBubble'
+import SocialLinks from './components/SocialLinks'
 // import { TransactionSummary } from './utils/etherscanService';
 
 export default function Home() {
@@ -267,8 +268,9 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="mt-auto py-6 text-center text-gray-500 text-sm">
-        <p>Powered by Lilypad Network and Anura API</p>
+      <footer className="mt-auto py-6 text-center text-gray-500 text-sm border-t border-gray-200 w-full max-w-4xl mx-auto">
+        <p className="mb-3">Powered by Lilypad Network and Anura API</p>
+        <SocialLinks />
       </footer>
     </div>
   )
