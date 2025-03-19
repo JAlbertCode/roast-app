@@ -447,8 +447,7 @@ export const getRandomFallbackRoast = (
   // Pick a random roast from that set and clean it
   const roast =
     set[
-      uniqueParams.styleIndex % set.length ||
-        Math.floor(Math.random() * set.length)
+      (uniqueParams.styleIndex !== undefined ? uniqueParams.styleIndex % set.length : Math.floor(Math.random() * set.length))
     ]
   return cleanRoastText(roast)
 }
