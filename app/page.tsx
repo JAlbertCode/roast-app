@@ -11,7 +11,7 @@ export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string>('')
   const [isRoasting, setIsRoasting] = useState<boolean>(false)
   const [roastText, setRoastText] = useState<string>(
-    "Ribbit! Paste your wallet address and I'll roast your financial decisions like they're flies on a lily pad!"
+    "I'm Sir Croaksworth, a financial analyst with impeccable taste. Show me your wallet, and I'll show you just how bad your decisions are."
   )
   const [roasts, setRoasts] = useState<string[]>([])
   const [selectedRoastIndex, setSelectedRoastIndex] = useState<number>(0)
@@ -20,6 +20,8 @@ export default function Home() {
   )
   // const [transactionSummary, setTransactionSummary] = useState<TransactionSummary | null>(null);
   const [error, setError] = useState<string | null>(null)
+  const [progressCounter, setProgressCounter] = useState<number>(0)
+  const [loadingStage, setLoadingStage] = useState<number>(0)
 
   // Remove development tools
   useEffect(() => {
@@ -48,6 +50,34 @@ export default function Home() {
     // Cleanup interval on component unmount
     return () => clearInterval(interval)
   }, [])
+  
+  // Update loading message based on how long we've been waiting
+  useEffect(() => {
+    if (isRoasting) {
+      if (progressCounter > 25) {
+        setLoadingStage(3)
+      } else if (progressCounter > 15) {
+        setLoadingStage(2)
+      } else if (progressCounter > 5) {
+        setLoadingStage(1)
+      }
+    } else {
+      setLoadingStage(0)
+    }
+  }, [progressCounter, isRoasting])
+
+  // Update the loading message based on stage
+  useEffect(() => {
+    if (isRoasting) {
+      if (loadingStage === 1) {
+        setRoastText('Still analyzing your transactions. Your investment choices are... interesting.')
+      } else if (loadingStage === 2) {
+        setRoastText('Processing the full extent of your financial missteps. Almost ready with your evaluation.')
+      } else if (loadingStage === 3) {
+        setRoastText("Your wallet is taking longer to assess than most. That's rarely a good sign.")
+      }
+    }
+  }, [loadingStage, isRoasting])
 
   const handleRoastClick = async () => {
     // Reset any previous errors
@@ -60,7 +90,7 @@ export default function Home() {
       walletAddress.length !== 42
     ) {
       setRoastText(
-        "That doesn't look like a valid wallet address! Are you trying to hide your poor financial decisions from me?"
+        "That's not a valid wallet address! Are you trying to hide your financial incompetence from me?"
       )
       return
     }
@@ -68,12 +98,20 @@ export default function Home() {
     // Start the roasting process
     setIsRoasting(true)
     setRoastText(
-      'Hmm, let me check your transactions across all blockchains... *ribbit*'
+      'Let me check your transaction history. This should be... amusing.'
     )
+    
+    // Reset progress counter and start incrementing it
+    setProgressCounter(0)
+    setLoadingStage(0)
+    const progressInterval = setInterval(() => {
+      setProgressCounter(prev => prev + 1)
+    }, 1000)
 
     try {
-      // Call our multi-chain API endpoint
-      const response = await fetch('/api/roast', {
+      // Call our enhanced API endpoint that uses the 60-second timeout
+      console.log('Calling roast-pro endpoint with extended timeout...')
+      const response = await fetch('/api/roast-pro', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,15 +125,17 @@ export default function Home() {
       }
 
       const data = await response.json()
+      console.log('Roast generated successfully in', data.processingTime, 'seconds')
 
       // Reset selected roast index
       setSelectedRoastIndex(0)
 
       // Update state with the roasts and wallet category
-      setRoasts(data.roasts)
-      setRoastText(data.roasts[0]) // Display the first roast initially
-      setWalletSize(data.walletCategory)
-      // setTransactionSummary(data.summary);
+      setRoasts(data.roasts || [])
+      if (data.roasts && data.roasts.length > 0) {
+        setRoastText(data.roasts[0])
+      }
+      setWalletSize(data.walletCategory || 'average')
     } catch (err) {
       const error = err as Error
       console.error('Error:', error)
@@ -106,10 +146,11 @@ export default function Home() {
           : 'Failed to generate roast. Try again later.'
       )
       setRoastText(
-        "Ribbit! My lily pad connection seems unstable. I couldn't analyze your wallet properly. Try again or check if your wallet address is valid."
+        "My connections to the blockchain appear to be offline. Even your wallet isn't worth this much trouble."
       )
     } finally {
       setIsRoasting(false)
+      clearInterval(progressInterval)
     }
   }
 
@@ -125,7 +166,7 @@ export default function Home() {
     if (
       !roastText ||
       roastText ===
-        "Ribbit! Paste your wallet address and I'll roast your financial decisions like they're flies on a lily pad!"
+        "I'm Sir Croaksworth, a financial analyst with impeccable taste. Show me your wallet, and I'll show you just how bad your decisions are."
     ) {
       return
     }
@@ -162,7 +203,7 @@ export default function Home() {
           </h1>
         </div>
         <p className="text-base sm:text-lg text-gray-600 text-center sm:text-left">
-          Get your wallet transactions roasted by the most savage frog banker on
+          Get your wallet transactions roasted by the most pretentious banker on
           the blockchain
         </p>
       </header>
@@ -181,6 +222,16 @@ export default function Home() {
 
         <div className="w-full max-w-xl mb-6 sm:mb-8">
           <SpeechBubble text={roastText} isTyping={isRoasting} position="top" />
+
+          {/* Progress bar when roasting */}
+          {isRoasting && (
+            <div className="mt-4 w-full bg-gray-200 rounded-full h-2.5">
+              <div 
+                className="bg-green-600 h-2.5 rounded-full transition-all duration-500" 
+                style={{ width: `${Math.min(progressCounter * 2, 95)}%` }}
+              ></div>
+            </div>
+          )}
 
           {/* Roast selector - only show if multiple roasts are generated */}
           {roasts.length > 0 && !isRoasting && (
@@ -210,7 +261,7 @@ export default function Home() {
           {roastText &&
             !isRoasting &&
             roastText !==
-              "Ribbit! Paste your wallet address and I'll roast your financial decisions like they're flies on a lily pad!" && (
+              "I'm Sir Croaksworth, a financial analyst with impeccable taste. Show me your wallet, and I'll show you just how bad your decisions are." && (
               <div className="flex justify-center mt-4">
                 <motion.button
                   className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-md transition duration-200 flex items-center gap-2 shadow-md"
