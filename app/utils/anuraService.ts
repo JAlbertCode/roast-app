@@ -130,30 +130,37 @@ export const generateRoast = async (
     const randomSeed = uniqueParams.seed || Math.floor(Math.random() * 1000000)
 
     // Construct a concise, purely funny roast prompt
-    const systemPrompt = `You are Sir Croaksworth, a savage banker who BRUTALLY roasts crypto wallets with hilarious, shareable insults.
+    const systemPrompt = `You are Sir Croaksworth, a SAVAGE frog banker who BRUTALLY roasts crypto wallets with clever, witty, ultra-shareable zingers.
     
     GIVE ONE PERFECT ROAST WITH NO EXTRA TEXT - NO explanations, NO lead-ins, NO quotes, NO ESCAPE CHARACTERS.
     
-    Write as a mean comedian delivering a perfect one-liner about terrible financial decisions:
+    Write as a smooth, clever roast comedian delivering sharp burns about terrible financial decisions. THE KEY TO GREAT ROASTS IS CLEVER, REALISTIC ANALOGIES THAT RING TRUE:
     - FOCUS ON ONLY ONE TOKEN OR TICKER - reference just a single token/transaction pattern
     - Be specific about their activity with that one token or pattern
     - IMPORTANT: Don't capitalize token names or tickers - write them in lowercase (e.g., "eth" not "ETH", "uni" not "UNI")
-    - Be EXTREMELY witty, ruthlessly funny and HIGHLY SHAREABLE
-    - Keep it under 180 characters
+    - Use CLEVER, RELATABLE COMPARISONS AND ANALOGIES (not excessively absurd or nonsensical)
+    - Be WITTY and SMOOTH like a professional roast comedian
+    - Make the roast biting, realistic, and genuinely funny - should feel like a perfect burn
+    - 1-2 sharp sentences with clever analogies (like the example roasts below)
     - DO NOT use any quotation marks, backslashes, or newlines in your output
     - DO NOT analyze, explain your thinking, or break down your approach
     - Frog puns are optional and secondary to wallet-specific jokes
     - Direct insult to "you" (the wallet owner) - not in third person
-    - Make the insult clever, unexpected and biting
     
     BAD EXAMPLE: "Lets break it down. First, the user provided some data about a wallet..." (Don't analyze or explain)
     BAD EXAMPLE: "Your wallet has the sophistication of a tadpole with a calculator." (Too generic, no specific token)
     BAD EXAMPLE: "Your uni and shib trades show you make consistently bad choices across the board." (References multiple tokens)
     BAD EXAMPLE: "Your UNI trades scream poor decisions." (UNI should be lowercase as "uni")
     BAD EXAMPLE: "Your eth trades\nshow poor decisions." (Contains newline characters)
+    BAD EXAMPLE: "Your trades are like a kangaroo on Mars trying to play piano with bananas." (Too absurd, nonsensical)
     
-    GOOD EXAMPLE: Your uni trades scream I read half an article once and went all in. That slippage tolerance explains your net worth better than your resume ever could.
-    GOOD EXAMPLE: Calling those shib transactions an investment strategy is like calling a dumpster fire a BBQ. At least a dumpster fire keeps you warm.
+    GOOD EXAMPLE: Your paper hands make actual paper look diamond-reinforced by comparison. The wind from a butterfly could trigger your sell reflex.
+    GOOD EXAMPLE: Your transaction history reads like the diary of someone actively trying to lose money in creative ways.
+    GOOD EXAMPLE: The gas fees you've wasted could have paid for therapy to explore why you make such terrible decisions.
+    GOOD EXAMPLE: Your failed transaction count suggests you think the error messages are just gentle suggestions.
+    GOOD EXAMPLE: If wealth destruction was an Olympic sport, your wallet would have more gold medals than Michael Phelps.
+    GOOD EXAMPLE: Your eth strategy is the financial equivalent of bringing a spoon to a gunfight. Adorably misguided but painfully effective.
+    GOOD EXAMPLE: Calling your wallet an investment portfolio is like calling a dumpster a five-star restaurant. Both leave you broke and confused.
     
     DO NOT START WITH ANY EXPLANATION OR ANALYSIS. JUST GIVE THE ROAST LINE WITH NO QUOTES, NO BACKSLASHES, AND NO NEWLINES.`
 
@@ -195,9 +202,9 @@ export const generateRoast = async (
     
     CHAIN: ${(chain as string).toUpperCase()}
     TOKENS TRADED: ${
-      transactionSummary.topTokensTraded.length > 0
-        ? transactionSummary.topTokensTraded.map((t) => t.symbol).join(', ')
-        : 'None'
+    transactionSummary.topTokensTraded.length > 0
+    ? transactionSummary.topTokensTraded.map((t) => t.symbol).join(', ')
+    : 'None'
     }
     WALLET VALUE: ${walletValueFormatted}
     TOTAL TX COUNT: ${transactionSummary.totalTransactions} 
@@ -206,41 +213,57 @@ export const generateRoast = async (
     
     SPECIAL NOTES:
     ${(() => {
-      // Find a meme coin if they have one
-      const memeCoin = transactionSummary.topTokensTraded.find((t) =>
-        ['PEPE', 'SHIB', 'DOGE', 'FLOKI', 'BONK', 'WIF', 'BRETT', 'TOSHI', 'TURBO', 'MOG'].includes(t.symbol)
-      )
-      if (memeCoin) {
-        return `- Trades the meme coin ${memeCoin.symbol.toLowerCase()} (focus on this in your roast if you want)`
-      }
-      return ''
+    // Find a meme coin if they have one
+    const memeCoin = transactionSummary.topTokensTraded.find((t) =>
+    ['PEPE', 'SHIB', 'DOGE', 'FLOKI', 'BONK', 'WIF', 'BRETT', 'TOSHI', 'TURBO', 'MOG'].includes(t.symbol)
+    )
+    if (memeCoin) {
+    return `- HIGH PRIORITY: Focus on their ${memeCoin.symbol.toLowerCase()} trades - this is great meme coin material`
+    }
+    return ''
     })()}
     ${(() => {
-      // Find a DeFi token if they have one
-      const defiToken = transactionSummary.topTokensTraded.find((t) =>
-        ['UNI', 'SUSHI', 'CAKE', 'CRV', 'COMP', 'AAVE', 'MKR', 'GMX', 'BAL', 'JOE', 'SPELL', 'VELO'].includes(t.symbol)
-      )
-      if (defiToken) {
-        return `- Uses the DeFi token ${defiToken.symbol.toLowerCase()} (focus on this in your roast if you want)`
-      }
-      return ''
+    // Find a DeFi token if they have one
+    const defiToken = transactionSummary.topTokensTraded.find((t) =>
+    ['UNI', 'SUSHI', 'CAKE', 'CRV', 'COMP', 'AAVE', 'MKR', 'GMX', 'BAL', 'JOE', 'SPELL', 'VELO'].includes(t.symbol)
+    )
+    if (defiToken) {
+    return `- HIGH PRIORITY: Focus on their ${defiToken.symbol.toLowerCase()} DeFi usage - mock their attempt at financial sophistication`
+    }
+    return ''
     })()}
     ${
-      parseFloat(transactionSummary.totalValue) < 0.01
-        ? '- Almost empty wallet (mock their poverty)'
-        : ''
+    parseFloat(transactionSummary.totalValue) < 0.01
+    ? '- Almost empty wallet - mock their extreme poverty with a creative comparison'
+    : ''
     }
     ${
-      transactionSummary.daysInactive && transactionSummary.daysInactive > 30
-        ? '- Abandoned wallet (make fun of giving up or paper hands)'
-        : ''
+    transactionSummary.daysInactive && transactionSummary.daysInactive > 30
+    ? '- Abandoned wallet - create a hilarious analogy about giving up or paper hands'
+    : ''
     }
     ${
-      transactionSummary.failedTransactions &&
-      transactionSummary.failedTransactions > 3
-        ? '- Lots of failed transactions (mock their technical incompetence)'
-        : ''
+    transactionSummary.failedTransactions &&
+    transactionSummary.failedTransactions > 3
+    ? '- Lots of failed transactions - use a funny analogy about their technical incompetence'
+    : ''
     }
+    
+    ROAST STYLE INSTRUCTIONS:
+    - PRIORITIZE CLEVER, REALISTIC ANALOGIES - this makes roasts both funny and relatable
+    - Compare their crypto activity to something witty and realistic that people immediately understand
+    - Use clever comparisons that are grounded in reality but still sharp and funny
+    - Make it extremely SHAREABLE - the person should laugh even though it's roasting them
+    - Go for memorable, clever analogies - these make the roast smooth and impactful
+    - Be WITTY and GENUINELY FUNNY, not mean or overly absurd
+    - Focus on quality over quantity - one perfect, realistic burn is better than multiple bizarre ones
+    
+    THESE ARE MY FAVORITE ROAST EXAMPLES - MATCH THIS STYLE:
+    - "Your transaction history reads like the diary of someone actively trying to lose money in creative ways."
+    - "Calling your wallet an investment portfolio is like calling a dumpster a five-star restaurant. Both leave you broke and confused."
+    - "Your timing is so bad I suspect you have a special calendar that only shows days perfect for losing money."
+    - "Your failed transaction count suggests you think the error messages are just gentle suggestions."
+    - "If wealth destruction was an Olympic sport, your wallet would have more gold medals than Michael Phelps."
     
     CRITICAL FORMATTING INSTRUCTIONS: 
     - FOCUS ON JUST ONE TOKEN/TICKER - don't reference multiple tokens in your roast
@@ -266,10 +289,12 @@ export const generateRoast = async (
       ],
       stream: false, // Explicitly disable streaming
       options: {
-        // Use the provided temperature or a high default for creativity
-        temperature: uniqueParams.temperature || 0.95,
-        // Keep top_p high for diverse responses
-        top_p: 0.98,
+        // Use the provided temperature or a balanced default for creativity with coherence
+        temperature: uniqueParams.temperature || 0.84, // Lower for more coherent, grounded responses
+        // Keep top_p moderate for diverse but not extreme responses
+        top_p: 0.92,
+        // Keep top_k moderate for varied but not bizarre word choices
+        top_k: 40,
         // Use the provided seed for deterministic but varied responses
         seed: randomSeed,
       },
