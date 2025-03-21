@@ -3,6 +3,23 @@ import { chainConfigs, getChainConfig } from './config';
 import { Transaction } from '../etherscanService';
 
 /**
+ * Fetch transactions with timeout
+ */
+async function fetchWithTimeout(url: string, timeoutMs: number = 15000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
+}
+
+/**
  * Get the first block of 2025 for a specific chain
  */
 export const getFirstBlockOf2025 = async (
@@ -14,9 +31,14 @@ export const getFirstBlockOf2025 = async (
     // Jan 1, 2025 at 00:00:00 GMT in UNIX timestamp
     const timestamp = "1735689600";
     
-    const response = await fetch(
-      `${config.apiUrl}?module=block&action=getblocknobytime&timestamp=${timestamp}&closest=after&${config.apiKeyParam}=${apiKey}`
-    );
+    // Build the URL with or without API key parameter as needed
+    let url = `${config.apiUrl}?module=block&action=getblocknobytime&timestamp=${timestamp}&closest=after`;
+    if (config.apiKeyParam && apiKey) {
+      url += `&${config.apiKeyParam}=${apiKey}`;
+    }
+    
+    // Use fetchWithTimeout to prevent hanging requests
+    const response = await fetchWithTimeout(url, 15000);
     
     const data = await response.json();
     
@@ -36,19 +58,26 @@ export const getFirstBlockOf2025 = async (
 
 /**
  * Fetch transactions for a wallet from a specific blockchain explorer
+ * with a limit on the number of transactions to process
  */
 export const getTransactions = async (
   walletAddress: string, 
   chainId: ChainId,
-  apiKey: string
+  apiKey: string,
+  maxTransactions: number = 100 // Default limit of 100 transactions
 ): Promise<Transaction[]> => {
   try {
     const config = getChainConfig(chainId);
     const firstBlock2025 = await getFirstBlockOf2025(chainId, apiKey);
     
-    const url = `${config.apiUrl}?module=account&action=txlist&address=${walletAddress}&startblock=${firstBlock2025}&endblock=99999999&sort=desc&${config.apiKeyParam}=${apiKey}`;
+    // Build the URL with or without API key parameter as needed
+    let url = `${config.apiUrl}?module=account&action=txlist&address=${walletAddress}&startblock=${firstBlock2025}&endblock=99999999&sort=desc&offset=${maxTransactions}`;
+    if (config.apiKeyParam && apiKey) {
+      url += `&${config.apiKeyParam}=${apiKey}`;
+    }
     
-    const response = await fetch(url);
+    // Use fetchWithTimeout to prevent hanging requests
+    const response = await fetchWithTimeout(url, 15000);
     const data = await response.json();
     
     if (data.status === "1") {
@@ -68,19 +97,26 @@ export const getTransactions = async (
 
 /**
  * Fetch ERC20 token transfers for a wallet from a specific blockchain
+ * with a limit on the number of transactions to process
  */
 export const getTokenTransfers = async (
   walletAddress: string, 
   chainId: ChainId,
-  apiKey: string
+  apiKey: string,
+  maxTransactions: number = 50 // Default limit of 50 token transfers
 ): Promise<Transaction[]> => {
   try {
     const config = getChainConfig(chainId);
     const firstBlock2025 = await getFirstBlockOf2025(chainId, apiKey);
     
-    const url = `${config.apiUrl}?module=account&action=tokentx&address=${walletAddress}&startblock=${firstBlock2025}&endblock=99999999&sort=desc&${config.apiKeyParam}=${apiKey}`;
+    // Build the URL with or without API key parameter as needed
+    let url = `${config.apiUrl}?module=account&action=tokentx&address=${walletAddress}&startblock=${firstBlock2025}&endblock=99999999&sort=desc&offset=${maxTransactions}`;
+    if (config.apiKeyParam && apiKey) {
+      url += `&${config.apiKeyParam}=${apiKey}`;
+    }
     
-    const response = await fetch(url);
+    // Use fetchWithTimeout to prevent hanging requests
+    const response = await fetchWithTimeout(url, 15000);
     const data = await response.json();
     
     if (data.status === "1") {
@@ -110,9 +146,11 @@ export const getAllChainTransactions = async (
   // Process chains in parallel
   const chainPromises = Object.keys(chainConfigs).map(async (chainId) => {
     const chain = chainId as ChainId;
+    const config = getChainConfig(chain);
     const apiKey = apiKeys[chain];
     
-    if (!apiKey) {
+    // Skip if API key is required but not provided
+    if (config.apiKeyParam && !apiKey) {
       results[chain] = [];
       return;
     }
@@ -137,9 +175,11 @@ export const getAllChainTokenTransfers = async (
   // Process chains in parallel
   const chainPromises = Object.keys(chainConfigs).map(async (chainId) => {
     const chain = chainId as ChainId;
+    const config = getChainConfig(chain);
     const apiKey = apiKeys[chain];
     
-    if (!apiKey) {
+    // Skip if API key is required but not provided
+    if (config.apiKeyParam && !apiKey) {
       results[chain] = [];
       return;
     }

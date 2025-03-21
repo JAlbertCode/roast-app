@@ -1,5 +1,15 @@
 # Sir Croaksworth's Roast DApp - Development Progress
 
+### Commit 15: Expanded Chain Support & Improved Roasts
+- Added support for additional blockchains: Avalanche, Fantom, BNB Chain, Cronos, and zkSync Era
+- Improved roast randomization with flat array structure and better seed generation
+- Enhanced transaction handling with optimal limits to prevent timeouts
+- Increased Anura API timeout to 60 seconds for better success with Lilypad Network
+- Implemented automatic Fast Mode for complex wallets
+- Added 75 unique fallback roasts with duplicate prevention
+- Fixed text cleaning to better handle escape sequences and newlines
+- Expanded token recognition for improved roast quality
+
 A decentralized application where Sir Croaksworth, the savage frog banker, roasts users' crypto transactions across multiple blockchains.
 
 ## Project Overview
@@ -69,17 +79,24 @@ Sir Croaksworth's Roast DApp is a humorous application that analyzes blockchain 
 - Implemented image generation API endpoint
 - Created fallback images for when API is unavailable
 
+### Commit 13: Single Token Focus Optimization
+- Modified prompts to focus on only one token/ticker in each roast
+- Added specific examples showing good/bad practices for token references
+- Implemented token selection logic to highlight specific tokens
+- Enhanced special notes to suggest focusing on a specific token
+- Added critical instruction to avoid referencing multiple tokens
+
 ## Current Status & Known Issues
 
-1. **API Integration**: The Anura API integration is in place with robust error handling and fallbacks for both roast generation and image generation.
+1. **API Integration**: The Anura API integration is in place with robust error handling, automatic retry with Fast Mode, and improved fallbacks for roast generation.
 
 2. **Witty Roasts**: Sir Croaksworth now produces wittier, more creative roasts with amusing frog puns and financial mockery.
 
-3. **Image Generation**: The app now supports generating frog banker images to accompany roasts, which can be toggled on/off.
+3. **Multi-Chain Support**: The app automatically scans multiple chains (Ethereum, Polygon, Arbitrum, Optimism, Base, Avalanche, Fantom, BNB Chain, Cronos, and zkSync Era) for which API keys are configured.
 
-4. **Multi-Chain Support**: The app automatically scans all chains for which API keys are available.
+4. **Complex Wallet Handling**: Automatic Fast Mode for complex wallets with many transactions.
 
-5. **UI Simplification**: Dark mode has been removed for a cleaner, more consistent interface.
+5. **Enhanced Fallbacks**: 75 unique fallback roasts with randomization to ensure variety.
 
 ## Next Steps
 
@@ -99,19 +116,33 @@ To run this application, you'll need:
 3. **Optional API Keys** for other blockchains:
    - Polygonscan API Key (Polygon)
    - Arbiscan API Key (Arbitrum)
-   - Optimism API Key
+   - Optimism API Key (Optimism)
    - Basescan API Key (Base)
+   - FTMScan API Key (Fantom)
+   - BSCScan API Key (BNB Chain)
+   - CronoScan API Key (Cronos)
+
+**Note**: Avalanche (Snowtrace) and zkSync Era don't require API keys for free tier access.
 
 ## Getting Started
 
 1. Create a `.env.local` file in the project root with your API keys:
    ```
-   NEXT_PUBLIC_ETHERSCAN_API_KEY=your_key_here
    ANURA_API_KEY=your_key_here
+   
+   # Required blockchain API keys
+   NEXT_PUBLIC_ETHERSCAN_API_KEY=your_key_here
+   
+   # Optional blockchain API keys
    NEXT_PUBLIC_POLYGONSCAN_API_KEY=optional
    NEXT_PUBLIC_ARBISCAN_API_KEY=optional
    NEXT_PUBLIC_OPTIMISM_API_KEY=optional
    NEXT_PUBLIC_BASESCAN_API_KEY=optional
+   NEXT_PUBLIC_FTMSCAN_API_KEY=optional
+   NEXT_PUBLIC_BSCSCAN_API_KEY=optional
+   NEXT_PUBLIC_CRONOSCAN_API_KEY=optional
+   
+   # Note: No API keys needed for Avalanche or zkSync Era
    ```
 
 2. Install dependencies:
@@ -132,10 +163,11 @@ To run this application, you'll need:
 - **Styling**: TailwindCSS
 - **Animations**: Framer Motion for smooth transitions and animations
 - **API Integration**: 
-  - Blockchain explorers for transaction data
-  - Anura API for AI-powered roast generation
+  - Multiple blockchain explorers for transaction data (10 chains supported)
+  - Anura API for AI-powered roast generation via Lilypad Network
 - **State Management**: React useState/useEffect hooks
-- **Dark Mode**: Client-side with localStorage persistence
+- **Smart Error Handling**: Automatic retry with Fast Mode for complex wallets
+- **Fallback System**: Extensive randomized fallback roasts when API is unavailable
 
 ## Future Improvements
 

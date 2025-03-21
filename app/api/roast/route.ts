@@ -15,8 +15,8 @@ const ANURA_API_KEY = process.env.ANURA_API_KEY || '';
 
 export async function POST(request: Request) {
   try {
-    // Extract wallet address from request
-    const { walletAddress } = await request.json();
+    // Extract wallet address and mode from request
+    const { walletAddress, fastMode = false } = await request.json();
     
     if (!walletAddress) {
       return NextResponse.json(
@@ -41,9 +41,9 @@ export async function POST(request: Request) {
       );
     }
     
-    // Fetch data from all chains
+    // Fetch data from all chains with fast mode parameter
     const { aggregatedSummary, walletCategory, mostActiveChain, chainSummaries } = 
-      await getAllChainsData(walletAddress);
+      await getAllChainsData(walletAddress, fastMode);
     
     // Generate multiple roasts (3 of them)
     const roastPromises = [];
@@ -67,22 +67,31 @@ export async function POST(request: Request) {
       
       // Create a promise that adds a slight delay between requests
       const roastPromise = new Promise<RoastResult>(async (resolve) => {
-        // Delay to ensure different random seeds
+        // Add increasingly longer delays between requests to avoid rate limiting
+        const delayMs = i * 1000; // 0s, 1s, 2s delays
         if (i > 0) {
-          await new Promise(r => setTimeout(r, uniqueParams.timeout as number));
+          console.log(`Waiting ${delayMs}ms before starting request #${i+1}...`);
+          await new Promise(r => setTimeout(r, delayMs));
         }
         
         try {
           // Attempt to generate a roast
           console.log(`Generating roast #${i+1} with uniqueParams:`, uniqueParams);
+          console.log(`Calling Anura API for roast #${i+1}`);
+          const startTime = Date.now();
           const roast = await generateRoast(aggregatedSummary, walletAddress, ANURA_API_KEY, uniqueParams);
+          const endTime = Date.now();
+          console.log(`Got successful response for roast #${i+1} in ${(endTime - startTime)/1000}s`);
           resolve({ text: roast, error: false });
         } catch (err) {
           const error = err as Error;
           console.error(`Error in roast request ${i+1}:`, error);
           
           // Get a better fallback roast that's still funny
-          const fallbackRoast = getRandomFallbackRoast(uniqueParams);
+          // Get a truly random fallback roast
+          // Create a unique seed based on timestamp + random + request number
+          const uniqueSeed = Date.now() + Math.floor(Math.random() * 1000000) + (i * 31337);
+          const fallbackRoast = getRandomFallbackRoast({ seed: uniqueSeed });
           
           resolve({ 
             text: fallbackRoast, 
@@ -97,11 +106,19 @@ export async function POST(request: Request) {
     }
     
     // Execute them in parallel for better performance
+    console.log(`Waiting for ${roastPromises.length} roast promises to complete...`);
     const results = await Promise.all(roastPromises);
     
     // Extract roasts and errors from results
     const roasts = results.map(result => result.text);
+    const fallbackCount = results.filter(result => result.isFallback).length;
+    console.log(`Got ${roastPromises.length} results with ${fallbackCount} fallbacks`);
     const errors = results.filter(result => result.error).map(result => result.errorMessage || 'Unknown error');
+    
+    // Log each result for debugging
+    results.forEach((result, index) => {
+      console.log(`Roast #${index + 1}: ${result.isFallback ? 'FALLBACK' : 'AI-GENERATED'} -> ${result.text.substring(0, 50)}...`);
+    });
     
     // Return the results - including any errors that occurred
     return NextResponse.json({
@@ -118,12 +135,25 @@ export async function POST(request: Request) {
     const err = error as Error;
     console.error('Error generating roast:', err);
     
-    // Generate fallback roasts that are still funny
-    const fallbackRoasts = [
-      getRandomFallbackRoast({ personalityIndex: 0, styleIndex: 0 }),
-      getRandomFallbackRoast({ personalityIndex: 1, styleIndex: 1 }),
-      getRandomFallbackRoast({ personalityIndex: 2, styleIndex: 2 })
-    ];
+    // Generate truly random fallback roasts
+    const fallbackRoasts = [];
+    
+    // Track used indices to avoid duplicates within a single response
+    const usedIndices = new Set<number>();
+    
+    // Generate 3 unique fallbacks
+    for (let i = 0; i < 3; i++) {
+      // Create a unique seed for each roast based on timestamp + random number + index
+      const uniqueSeed = Date.now() + Math.floor(Math.random() * 1000000) + (i * 31337);
+      
+      // Generate a fallback and make sure we track it to avoid duplicates
+      let fallbackRoast;
+      do {
+        fallbackRoast = getRandomFallbackRoast({ seed: uniqueSeed + usedIndices.size });
+      } while (fallbackRoasts.includes(fallbackRoast)); // Ensure we don't use the same roast twice
+      
+      fallbackRoasts.push(fallbackRoast);
+    }
     
     return NextResponse.json(
       { 

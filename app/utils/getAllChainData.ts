@@ -1,6 +1,7 @@
 import { ChainId } from './chains/types';
 import { getTransactions, getTokenTransfers } from './chains/blockchainService';
 import { summarizeTransactions, assessWalletCategory, TransactionSummary } from './etherscanService';
+import { getChainConfig } from './chains/config';
 
 // Load blockchain API keys from environment variables
 const getApiKeys = (): Record<ChainId, string> => {
@@ -10,10 +11,18 @@ const getApiKeys = (): Record<ChainId, string> => {
     arbitrum: process.env.NEXT_PUBLIC_ARBISCAN_API_KEY || '',
     optimism: process.env.NEXT_PUBLIC_OPTIMISM_API_KEY || '',
     base: process.env.NEXT_PUBLIC_BASESCAN_API_KEY || '',
+    avalanche: process.env.NEXT_PUBLIC_SNOWTRACE_API_KEY || '',
+    fantom: process.env.NEXT_PUBLIC_FTMSCAN_API_KEY || '',
+    bsc: process.env.NEXT_PUBLIC_BSCSCAN_API_KEY || '',
+    cronos: process.env.NEXT_PUBLIC_CRONOSCAN_API_KEY || '',
+    zksync: process.env.NEXT_PUBLIC_ZKSYNC_API_KEY || '',
   };
 };
 
-export const getAllChainsData = async (walletAddress: string): Promise<{
+export const getAllChainsData = async (
+  walletAddress: string,
+  fastMode: boolean = false
+): Promise<{
   aggregatedSummary: TransactionSummary;
   walletCategory: 'poor' | 'average' | 'wealthy';
   mostActiveChain: ChainId | null;
@@ -22,17 +31,31 @@ export const getAllChainsData = async (walletAddress: string): Promise<{
   const apiKeys = getApiKeys();
   const chainSummaries: Record<ChainId, TransactionSummary | null> = {} as Record<ChainId, TransactionSummary | null>;
   
+  // Set transaction limits based on mode
+  const txLimit = fastMode ? 30 : 100;
+  const tokenTxLimit = fastMode ? 20 : 50;
+  
+  // In fast mode, focus only on most common chains
+  const chainsToProcess = fastMode
+    ? ['ethereum', 'polygon', 'arbitrum', 'optimism', 'base']
+    : Object.keys(apiKeys);
+  
   // Collect promises for parallel execution
-  const chainPromises = Object.entries(apiKeys).map(async ([chainId, apiKey]) => {
-    if (!apiKey) {
-      chainSummaries[chainId as ChainId] = null;
+  const chainPromises = chainsToProcess.map(async (chainId) => {
+    const chain = chainId as ChainId;
+    const apiKey = apiKeys[chain];
+    const config = getChainConfig(chain);
+    
+    // Skip if API key is required but not provided
+    if (config.apiKeyParam && !apiKey) {
+      chainSummaries[chain] = null;
       return;
     }
     
     try {
-      // Fetch data for this chain
-      const transactions = await getTransactions(walletAddress, chainId as ChainId, apiKey);
-      const tokenTransfers = await getTokenTransfers(walletAddress, chainId as ChainId, apiKey);
+      // Fetch data for this chain with transaction limits
+      const transactions = await getTransactions(walletAddress, chain, apiKey, txLimit);
+      const tokenTransfers = await getTokenTransfers(walletAddress, chain, apiKey, tokenTxLimit);
       
       // Create summary for this chain
       const summary = summarizeTransactions(transactions, tokenTransfers, walletAddress);
@@ -40,14 +63,14 @@ export const getAllChainsData = async (walletAddress: string): Promise<{
       // Add chain information
       const enhancedSummary = {
         ...summary,
-        chain: chainId as ChainId
+        chain: chain
       };
       
       // Store the summary
-      chainSummaries[chainId as ChainId] = enhancedSummary;
+      chainSummaries[chain] = enhancedSummary;
     } catch (error) {
       console.error(`Error fetching data for ${chainId}:`, error);
-      chainSummaries[chainId as ChainId] = null;
+      chainSummaries[chain] = null;
     }
   });
   

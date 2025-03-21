@@ -118,13 +118,15 @@ export default function Home() {
       const timeoutId = setTimeout(() => controller.abort(), 65000) // 65 seconds
       
       try {
-        const response = await fetch('/api/roast-pro', {
+        const response = await fetch('/api/roast', {  // Using standard endpoint instead of roast-pro
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            ...(useOptimizeMode ? { 'x-optimize-mode': 'true' } : {})
           },
-          body: JSON.stringify({ walletAddress }),
+          body: JSON.stringify({ 
+            walletAddress,
+            fastMode: useOptimizeMode // Pass the fast mode parameter
+          }),
           signal: controller.signal
         })
 
@@ -166,7 +168,22 @@ export default function Home() {
       const error = err as Error
       console.error('Error:', error)
       
-      // Specific error handling for timeouts
+      // If the request failed due to timeout or complexity and we're not already in Fast Mode,
+      // automatically retry with Fast Mode
+      if ((error.message.includes('timed out') || error.message.includes('too long to process')) && !useOptimizeMode) {
+        console.log('Automatically retrying with Fast Mode...')
+        setError(null) // Clear the error
+        setUseOptimizeMode(true) // Enable Fast Mode
+        setRoastText('That wallet has a lot of activity. Let me try with a faster approach...') // Update UI
+        
+        // Wait a moment before retrying to let the user see the message
+        setTimeout(() => {
+          handleRoastClick() // Retry the roast with Fast Mode enabled
+        }, 1500)
+        return // Exit early to prevent showing error message
+      }
+      
+      // Handle errors that occur even with Fast Mode
       if (error.message.includes('timed out')) {
         setError('The request took too long to process. This can happen with complex wallets. Try a wallet with fewer transactions.')
         setRoastText(
@@ -325,25 +342,6 @@ export default function Home() {
         {error && (
           <div className="w-full max-w-xl mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
             {error}
-            
-            {error.includes('took too long') && (
-              <div className="mt-4 flex justify-center">
-                <motion.button
-                  className="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-md transition duration-200 flex items-center gap-2"
-                  onClick={() => {
-                    setUseOptimizeMode(true);
-                    handleRoastClick();
-                  }}
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  <span className="mr-1">⚡</span> Retry in Fast Mode
-                </motion.button>
-              </div>
-            )}
           </div>
         )}
 

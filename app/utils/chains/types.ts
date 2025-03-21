@@ -18,7 +18,12 @@ export type ChainId =
   | 'polygon'
   | 'arbitrum'
   | 'optimism'
-  | 'base';
+  | 'base'
+  | 'avalanche'
+  | 'fantom'
+  | 'bsc'
+  | 'cronos'
+  | 'zksync';
 
 export const CHAIN_NAMES: Record<ChainId, string> = {
   ethereum: 'Ethereum',
@@ -26,4 +31,9 @@ export const CHAIN_NAMES: Record<ChainId, string> = {
   arbitrum: 'Arbitrum',
   optimism: 'Optimism',
   base: 'Base',
+  avalanche: 'Avalanche',
+  fantom: 'Fantom',
+  bsc: 'BNB Chain',
+  cronos: 'Cronos',
+  zksync: 'zkSync Era',
 };

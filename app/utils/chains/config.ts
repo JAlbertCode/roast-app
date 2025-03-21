@@ -57,6 +57,61 @@ export const chainConfigs: Record<ChainId, ChainConfig> = {
     color: '#0052FF',
     firstBlockOf2025: '10000000', // Approximate
   },
+  avalanche: {
+    id: 43114,
+    name: 'Avalanche',
+    shortName: 'AVAX',
+    explorerUrl: 'https://snowtrace.io',
+    apiUrl: 'https://api.snowtrace.io/api',
+    apiKeyParam: 'apikey', // Will use empty string for free tier
+    icon: '❄️',
+    color: '#E84142',
+    firstBlockOf2025: '40000000', // Approximate
+  },
+  fantom: {
+    id: 250,
+    name: 'Fantom',
+    shortName: 'FTM',
+    explorerUrl: 'https://ftmscan.com',
+    apiUrl: 'https://api.ftmscan.com/api',
+    apiKeyParam: 'apikey',
+    icon: '👻',
+    color: '#1969FF',
+    firstBlockOf2025: '70000000', // Approximate
+  },
+  bsc: {
+    id: 56,
+    name: 'BNB Chain',
+    shortName: 'BNB',
+    explorerUrl: 'https://bscscan.com',
+    apiUrl: 'https://api.bscscan.com/api',
+    apiKeyParam: 'apikey',
+    icon: '🟡',
+    color: '#F3BA2F',
+    firstBlockOf2025: '35000000', // Approximate
+  },
+  cronos: {
+    id: 25,
+    name: 'Cronos',
+    shortName: 'CRO',
+    explorerUrl: 'https://cronoscan.com',
+    apiUrl: 'https://api.cronoscan.com/api',
+    apiKeyParam: 'apikey',
+    icon: '🔷',
+    color: '#002D74',
+    firstBlockOf2025: '15000000', // Approximate
+  },
+  zksync: {
+    id: 324,
+    name: 'zkSync Era',
+    shortName: 'ETH',
+    explorerUrl: 'https://explorer.zksync.io',
+    apiUrl: 'https://block-explorer-api.mainnet.zksync.io/api',
+    apiKeyParam: '', // No API key required
+    icon: '⚡',
+    color: '#8C8DFC',
+    firstBlockOf2025: '20000000', // Approximate
+  },
 };
 
 // Function to detect which chain a wallet address belongs to
