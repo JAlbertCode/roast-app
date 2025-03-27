@@ -224,7 +224,7 @@ export default function Home() {
     }
 
     // Prepare the tweet text
-    const tweetText = `I just got my wallet roasted by Sir Croaksworth: "${roastText}" ${window.location.origin}\n\n#Lilypad #Roasted`
+    const tweetText = `I just got my wallet roasted by Sir Croaksworth: "${roastText}" ${window.location.origin}\n\n@Lilypad_Tech #Roasted`
 
     // Open Twitter intent URL
     window.open(
