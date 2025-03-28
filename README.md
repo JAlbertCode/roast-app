@@ -1,132 +1,90 @@
-# Sir Croaksworth's Roast DApp - Development Progress
+# Sir Croaksworth's Roast DApp
 
-### Commit 15: Expanded Chain Support & Improved Roasts
-- Added support for additional blockchains: Avalanche, Fantom, BNB Chain, Cronos, and zkSync Era
-- Improved roast randomization with flat array structure and better seed generation
-- Enhanced transaction handling with optimal limits to prevent timeouts
-- Increased Anura API timeout to 60 seconds for better success with Lilypad Network
-- Implemented automatic Fast Mode for complex wallets
-- Added 75 unique fallback roasts with duplicate prevention
-- Fixed text cleaning to better handle escape sequences and newlines
-- Expanded token recognition for improved roast quality
+## Overview
 
-A decentralized application where Sir Croaksworth, the savage frog banker, roasts users' crypto transactions across multiple blockchains.
+Sir Croaksworth's Roast DApp is a humorous web application that roasts users' cryptocurrency transactions using AI-generated humor. Sir Croaksworth, the monocle-wearing frog banker, analyzes on-chain data and delivers savage financial roasts in stylized speech bubbles.
 
-## Project Overview
+### Key Features
 
-Sir Croaksworth's Roast DApp is a humorous application that analyzes blockchain wallet transactions and generates savage, personalized roasts that users can share on social media. The app uses Lilypad's Anura API for AI-generated content.
+- **Wallet Analysis**: Users paste their wallet address to receive personalized roasts based on their transaction history
+- **Multi-Chain Support**: Fetches and analyzes transaction data from multiple blockchain networks (Ethereum, Polygon, Arbitrum, Optimism, Base, etc.)
+- **AI-Powered Roasts**: Uses Anura API (Lilypad Network) to generate humorous, customized roasts
+- **Social Sharing**: Users can share their roasts on Twitter tagging @lilypad_tech #Roasted
+- **Engaging UI**: Animated SVG character and speech bubbles optimize the experience for shareability
 
-## Development Progress
+## Tech Stack
 
-### Commit 1: Project Setup
-- Project initialized with Next.js, TypeScript, and TailwindCSS
-- Repository structure created
+- **Frontend**: TypeScript + React (Next.js)
+- **Backend**: TypeScript (Next.js API routes)
+- **Styling**: TailwindCSS
+- **Animations**: Framer Motion
+- **Blockchain Data**: Multiple chain explorer APIs (Etherscan, Polygonscan, Arbiscan, etc.)
+- **AI Integration**: Anura API (Lilypad Network)
 
-### Commit 2: Basic UI Components
-- Created SirCroaksworth component with different states based on wallet value
-- Implemented SpeechBubble component with typing animation
-- Added basic layout with wallet input and roast button
-- Implemented placeholder roast generation with random responses
-- Added Twitter sharing functionality
-- Extended Tailwind configuration with custom animations
+## How It Works
 
-### Commit 3: API Integration
-- Implemented etherscanService for fetching and analyzing wallet transactions
-- Added anuraService for AI-powered roast generation using Lilypad's Anura API
-- Created serverless API route for secure API key handling
-- Added transaction summary display after roast generation
-- Added error handling and loading states
+1. **Wallet Input**: User enters their wallet address
+2. **Multi-Chain Data Fetching**: App fetches transactions from multiple blockchain explorer APIs
+3. **Data Processing**: Transactions are summarized into a structured format
+4. **AI Roast Generation**: Transaction summary is sent to Anura API for roast generation
+5. **Display**: Sir Croaksworth delivers the roast in an animated speech bubble
+6. **Social Sharing**: User can share the roast on Twitter tagging @lilypad_tech #Roasted
 
-### Commit 4: Animations and Character Design
-- Created SVG representation of Sir Croaksworth character
-- Implemented Framer Motion animations throughout the UI
-- Added animated transitions for components
-- Enhanced user experience with interactive animations
+## Project Structure
 
-### Commit 5: Multi-Chain Support
-- Removed chain selector for better UX
-- Implemented automatic scanning of all configured chains
-- Created aggregated data model for comprehensive transaction summary
-- Updated UI to indicate multi-chain support
-- Enhanced roast generation with cross-chain data
-
-### Commit 6: Dark Mode Support
-- Added dark mode toggle component
-- Implemented theme persistence using localStorage
-- Enhanced UI for dark mode
-- Updated metadata and app title
-
-### Commit 7: Enhanced Sir Croaksworth Character
-- Created a better frog banker SVG with more details
-- Improved animations with smoother transitions
-- Added enhanced icons for wallet status indicators
-- Resized and repositioned Sir Croaksworth for better visibility
-- Added accessibility labels for screen readers
-
-### Commit 8: Feedback Implementation
-- Fixed API integration with better error handling
-- Made roasts more specific, aggressive and shareable 
-- Added multiple roast options with user selection UI
-- Updated sharing button from Twitter to X with new design
-- Fixed dark mode functionality with client-side hydration
-- Ensured wallet addresses never appear in roasts
-
-### Commit 11: UI Simplification and Image Generation
-- Removed dark mode toggle for simplified UI
-- Removed Next.js debug button
-- Added RoastImage component for generating shareable images
-- Added toggle to show/hide generated images
-- Implemented image generation API endpoint
-- Created fallback images for when API is unavailable
-
-### Commit 13: Single Token Focus Optimization
-- Modified prompts to focus on only one token/ticker in each roast
-- Added specific examples showing good/bad practices for token references
-- Implemented token selection logic to highlight specific tokens
-- Enhanced special notes to suggest focusing on a specific token
-- Added critical instruction to avoid referencing multiple tokens
-
-## Current Status & Known Issues
-
-1. **API Integration**: The Anura API integration is in place with robust error handling, automatic retry with Fast Mode, and improved fallbacks for roast generation.
-
-2. **Witty Roasts**: Sir Croaksworth now produces wittier, more creative roasts with amusing frog puns and financial mockery.
-
-3. **Multi-Chain Support**: The app automatically scans multiple chains (Ethereum, Polygon, Arbitrum, Optimism, Base, Avalanche, Fantom, BNB Chain, Cronos, and zkSync Era) for which API keys are configured.
-
-4. **Complex Wallet Handling**: Automatic Fast Mode for complex wallets with many transactions.
-
-5. **Enhanced Fallbacks**: 75 unique fallback roasts with randomization to ensure variety.
-
-## Next Steps
-
-1. **Testing**: Add comprehensive unit and integration tests
-2. **Deployment**: Prepare for deployment to Vercel
-3. **Mobile Optimization**: Improve the mobile experience with better responsive design
-4. **Analytics**: Add usage tracking to monitor popular features
-5. **Social Integration**: Expand social sharing options beyond Twitter
-6. **Image Gallery**: Create a gallery of recent roasts and generated images
-
-## Environment Requirements
-
-To run this application, you'll need:
-
-1. **Etherscan API Key**: Required for fetching Ethereum transaction data
-2. **Anura API Key**: Required for AI-generated roasts
-3. **Optional API Keys** for other blockchains:
-   - Polygonscan API Key (Polygon)
-   - Arbiscan API Key (Arbitrum)
-   - Optimism API Key (Optimism)
-   - Basescan API Key (Base)
-   - FTMScan API Key (Fantom)
-   - BSCScan API Key (BNB Chain)
-   - CronoScan API Key (Cronos)
-
-**Note**: Avalanche (Snowtrace) and zkSync Era don't require API keys for free tier access.
+```
+/
+├── app/
+│   ├── api/
+│   │   └── roast/
+│   │       └── route.ts          # API endpoint for roast generation
+│   ├── components/
+│   │   ├── ChainSelector.tsx     # Blockchain network selector
+│   │   ├── SirCroaksworth.tsx    # Animated frog character component
+│   │   ├── SocialLinks.tsx       # Social media links
+│   │   ├── SpeechBubble.tsx      # Dynamic speech bubble component
+│   │   └── icons/                # SVG icon components
+│   │       └── BetterSirCroaksworthSvg.tsx  # Sir Croaksworth SVG implementation
+│   ├── utils/
+│   │   ├── chains/               # Multi-chain blockchain API integration
+│   │   │   ├── blockchainService.ts # Transaction fetching logic
+│   │   │   ├── config.ts         # Chain configuration
+│   │   │   └── types.ts          # Type definitions
+│   │   ├── anuraService.ts       # Anura API integration
+│   │   ├── etherscanService.ts   # Etherscan API integration
+│   │   └── getAllChainData.ts    # Multi-chain data aggregation
+│   ├── page.tsx                  # Main app page with wallet input and roasting logic
+│   └── layout.tsx                # App layout 
+├── public/                       # Static assets
+├── package.json
+└── README.md
+```
 
 ## Getting Started
 
-1. Create a `.env.local` file in the project root with your API keys:
+### Prerequisites
+
+- Node.js (v18+)
+- npm or yarn
+- Anura API key from [Anura](https://anura.lilypad.tech/)
+- Blockchain API keys (Etherscan required, others optional)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/JAlbertCode/roast-app.git
+   cd roast-app
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn
+   ```
+
+3. Create a `.env.local` file in the project root with your API keys (you can copy from the provided `.env.example` file):
    ```
    ANURA_API_KEY=your_key_here
    
@@ -145,34 +103,149 @@ To run this application, you'll need:
    # Note: No API keys needed for Avalanche or zkSync Era
    ```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Run the development server:
+4. Start the development server:
    ```bash
    npm run dev
+   # or
+   yarn dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open http://localhost:3000 in your browser
 
-## Technical Architecture
+### Deployment
 
-- **Frontend**: Next.js with React and TypeScript
-- **Styling**: TailwindCSS
-- **Animations**: Framer Motion for smooth transitions and animations
-- **API Integration**: 
-  - Multiple blockchain explorers for transaction data (10 chains supported)
-  - Anura API for AI-powered roast generation via Lilypad Network
-- **State Management**: React useState/useEffect hooks
-- **Smart Error Handling**: Automatic retry with Fast Mode for complex wallets
-- **Fallback System**: Extensive randomized fallback roasts when API is unavailable
+#### Vercel Deployment (Recommended)
 
-## Future Improvements
+1. Push your code to GitHub
+2. Import the project to Vercel
+3. Configure environment variables in Vercel dashboard
+4. **Important**: Configure the following in your Vercel deployment settings:
+   - Set the **Serverless Function Timeout** to at least 60 seconds to accommodate longer API response times (requires a Vercel Pro account)
+   - Alternatively, modify the code to use a faster model (see "Customizing the AI Model" section)
 
-- Add unit and integration tests
-- Optimize for mobile devices
-- Add more animation effects and transitions
-- Improve accessibility features
-- Add analytics to track user engagement
+#### Manual Deployment
+
+To deploy to other services:
+
+```bash
+npm run build
+# or
+yarn build
+```
+
+Deploy the resulting build using your preferred hosting service.
+
+## Customization Guide
+
+Here are some ways you can repurpose this DApp for your own needs:
+
+### 1. Change the Character
+
+Replace Sir Croaksworth with your own character by:
+- Creating a new SVG component in the `app/components/icons/` directory
+- Updating the character implementation in `SirCroaksworth.tsx`
+- Modifying the character description in the prompt to Anura API
+
+### 2. Modify the Data Source
+
+The app currently uses multiple blockchain explorer APIs, but you can adapt it to use any data source:
+
+- Update `app/utils/chains/config.ts` to modify supported chains or add new ones
+- Modify the data processing logic in `blockchainService.ts` to handle different data structures
+- Update the prompt to Anura API to reference the new data
+
+### 3. Change the AI Integration
+
+You can replace Anura API with any text generation API:
+
+- Update `anuraService.ts` to use your preferred AI service
+- Adjust the prompt format to match the requirements of your chosen API
+- Update API key handling in the environment variables
+
+### 4. Customize the UI/UX
+
+- Modify the TailwindCSS theme in `tailwind.config.js`
+- Update animations in Framer Motion components
+- Redesign the speech bubble in `SpeechBubble.tsx`
+- Change the sharing functionality in `ShareButton.tsx`
+
+## Alternative DApp Ideas
+
+Here are some ideas for repurposing this codebase:
+
+1. **NFT Personality Analyzer**: Analyze a user's NFT collection and generate a personality profile
+2. **Crypto Trading Coach**: Review trading history and provide personalized trading advice
+3. **DeFi Strategy Recommender**: Analyze wallet activity and suggest optimal DeFi strategies
+4. **Web3 Horoscope**: Generate humorous "horoscopes" based on on-chain activity
+5. **Smart Contract Auditor**: Simplified interface for basic smart contract security checks with AI feedback
+
+## Customizing the AI Model
+
+The application uses Anura's API (Lilypad Network) with the `deepseek-r1:7b` model by default, but you can modify it to use other available models for different results:
+
+1. Open `app/utils/anuraService.ts`
+2. Locate this line in the `generateRoast` function:
+   ```typescript
+   const requestPayload: AnuraRequest = {
+     model: 'deepseek-r1:7b', // Using deepseek model by default
+     // ...
+   };
+   ```
+3. Change the model parameter to one of the other available models from Anura's API. For example:
+   - `'deepscaler:1.5b'` - Much smaller/faster model for quick responses
+   - `'llama3.1:8b'` - Balanced performance with high quality
+   - `'phi4:14b'` - Larger model with potentially better roast quality
+   - `'mistral:7b'` - Alternative model with different response style
+   - `'openthinker:7b'` - Alternative model with different characteristics
+   - `'llava:7b'` - Another option with unique response patterns
+
+Smaller models will respond more quickly but may produce less creative roasts. If you're experiencing timeout issues with the default model, switching to a smaller one like `deepscaler:1.5b` is recommended.
+
+You can check which models are available by calling the Anura API's models endpoint:
+
+```bash
+curl GET "https://anura-testnet.lilypad.tech/api/v1/models" \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Anura API Integration
+
+The DApp uses Anura, Lilypad Network's official AI inference API, for generating roasts. Here's a simplified example of how the integration works:
+
+```typescript
+// Example API call to Anura (simplified version for demonstration)
+const getRoast = async (transactionSummary: object) => {
+  const response = await fetch("https://anura-testnet.lilypad.tech/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.ANURA_API_KEY}`
+    },
+    body: JSON.stringify({
+      "model": "deepseek-r1:7b", // Or your preferred model
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are Sir Croaksworth, a monocle-wearing frog banker who roasts people's crypto transactions with savage humor."
+        },
+        {
+          "role": "user",
+          "content": `Roast this wallet's transaction history: ${JSON.stringify(transactionSummary)}`
+        }
+      ],
+      "stream": false,
+      "options": {
+        "temperature": 1.0
+      }
+    })
+  });
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+};
+```
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
