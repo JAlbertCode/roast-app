@@ -154,9 +154,10 @@ The app currently uses multiple blockchain explorer APIs, but you can adapt it t
 
 ### 3. Change the AI Integration
 
-You can replace Anura API with any text generation API:
+You can replace or modify the Anura API integration:
 
-- Update `anuraService.ts` to use your preferred AI service
+- Update `anuraService.ts` to use your preferred AI service or model
+- Try different available models (see "Anura API Integration" section below)
 - Adjust the prompt format to match the requirements of your chosen API
 - Update API key handling in the environment variables
 
@@ -177,29 +178,54 @@ Here are some ideas for repurposing this codebase:
 4. **Web3 Horoscope**: Generate humorous "horoscopes" based on on-chain activity
 5. **Smart Contract Auditor**: Simplified interface for basic smart contract security checks with AI feedback
 
-## Customizing the AI Model
+## Anura API Integration
 
-The application uses Anura's API (Lilypad Network) with the `deepseek-r1:7b` model by default, but you can modify it to use other available models for different results:
+The DApp uses Anura, Lilypad Network's official AI inference API, for generating roasts. Here's how the integration works:
 
-1. Open `app/utils/anuraService.ts`
-2. Locate this line in the `generateRoast` function:
-   ```typescript
-   const requestPayload: AnuraRequest = {
-     model: 'deepseek-r1:7b', // Using deepseek model by default
-     // ...
-   };
-   ```
-3. Change the model parameter to one of the other available models from Anura's API. For example:
-   - `'deepscaler:1.5b'` - Much smaller/faster model for quick responses
-   - `'llama3.1:8b'` - Balanced performance with high quality
-   - `'phi4:14b'` - Larger model with potentially better roast quality
-   - `'mistral:7b'` - Alternative model with different response style
-   - `'openthinker:7b'` - Alternative model with different characteristics
-   - `'llava:7b'` - Another option with unique response patterns
+```typescript
+// Example API call to Anura (simplified version for demonstration)
+const getRoast = async (transactionSummary: object) => {
+  const response = await fetch("https://anura-testnet.lilypad.tech/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.ANURA_API_KEY}`
+    },
+    body: JSON.stringify({
+      "model": "deepseek-r1:7b", // Or your preferred model
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are Sir Croaksworth, a monocle-wearing frog banker who roasts people's crypto transactions with savage humor."
+        },
+        {
+          "role": "user",
+          "content": `Roast this wallet's transaction history: ${JSON.stringify(transactionSummary)}`
+        }
+      ],
+      "stream": false,
+      "options": {
+        "temperature": 1.0
+      }
+    })
+  });
 
-Smaller models will respond more quickly but may produce less creative roasts. If you're experiencing timeout issues with the default model, switching to a smaller one like `deepscaler:1.5b` is recommended.
+  const data = await response.json();
+  return data.choices[0].message.content;
+};
+```
 
-You can check which models are available by calling the Anura API's models endpoint:
+**Note**: The actual implementation includes more complex handling for streaming responses, error handling, and fallback mechanisms that aren't shown in this simplified example.
+
+The application uses `deepseek-r1:7b` model by default, but several other models are available:
+- `deepscaler:1.5b` - Much smaller/faster model (recommended if you hit timeout issues)
+- `llama3.1:8b` - Balanced performance with high quality
+- `phi4:14b` - Larger model with potentially better roast quality
+- `mistral:7b` - Alternative model with different response style
+- `openthinker:7b` - Alternative model with different characteristics
+- `llava:7b` - Another option with unique response patterns
+
+You can check which models are available by calling the API endpoint:
 
 ```bash
 curl GET "https://anura-testnet.lilypad.tech/api/v1/models" \
