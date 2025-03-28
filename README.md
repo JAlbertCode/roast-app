@@ -99,8 +99,6 @@ Sir Croaksworth's Roast DApp is a humorous web application that roasts users' cr
    NEXT_PUBLIC_FTMSCAN_API_KEY=optional
    NEXT_PUBLIC_BSCSCAN_API_KEY=optional
    NEXT_PUBLIC_CRONOSCAN_API_KEY=optional
-   
-   # Note: No API keys needed for Avalanche or zkSync Era
    ```
 
 4. Start the development server:
@@ -207,43 +205,6 @@ You can check which models are available by calling the Anura API's models endpo
 curl GET "https://anura-testnet.lilypad.tech/api/v1/models" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-## Anura API Integration
-
-The DApp uses Anura, Lilypad Network's official AI inference API, for generating roasts. Here's a simplified example of how the integration works:
-
-```typescript
-// Example API call to Anura (simplified version for demonstration)
-const getRoast = async (transactionSummary: object) => {
-  const response = await fetch("https://anura-testnet.lilypad.tech/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.ANURA_API_KEY}`
-    },
-    body: JSON.stringify({
-      "model": "deepseek-r1:7b", // Or your preferred model
-      "messages": [
-        {
-          "role": "system",
-          "content": "You are Sir Croaksworth, a monocle-wearing frog banker who roasts people's crypto transactions with savage humor."
-        },
-        {
-          "role": "user",
-          "content": `Roast this wallet's transaction history: ${JSON.stringify(transactionSummary)}`
-        }
-      ],
-      "stream": false,
-      "options": {
-        "temperature": 1.0
-      }
-    })
-  });
-
-  const data = await response.json();
-  return data.choices[0].message.content;
-};
 ```
 
 ## License
