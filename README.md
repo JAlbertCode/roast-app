@@ -2,33 +2,31 @@
 
 ## Overview
 
-Sir Croaksworth's Roast DApp is a humorous web application that roasts users' cryptocurrency transactions using AI-generated humor. Sir Croaksworth, the monocle-wearing frog banker, analyzes on-chain data and delivers savage financial roasts in stylized speech bubbles.
+Sir Croaksworth's Roast DApp is a humorous web application that roasts users' cryptocurrency transactions. Users paste their wallet address, and Sir Croaksworth (a monocle-wearing frog banker) analyzes their on-chain data and delivers savage financial roasts in stylized speech bubbles.
 
 ### Key Features
 
-- **Wallet Analysis**: Users paste their wallet address to receive personalized roasts based on their transaction history
-- **Multi-Chain Support**: Fetches and analyzes transaction data from multiple blockchain networks (Ethereum, Polygon, Arbitrum, Optimism, Base, etc.)
-- **AI-Powered Roasts**: Uses Anura API (Lilypad Network) to generate humorous, customized roasts
-- **Social Sharing**: Users can share their roasts on Twitter tagging @lilypad_tech #Roasted
-- **Engaging UI**: Animated SVG character and speech bubbles optimize the experience for shareability
+- **Wallet Analysis**: Personalized roasts based on transaction history
+- **Multi-Chain Support**: Analyzes data from multiple networks (Ethereum, Polygon, Arbitrum, etc.)
+- **AI-Powered**: Uses Anura API (Lilypad Network) for roast generation
+- **Social Sharing**: Twitter integration with @lilypad_tech #Roasted
+- **Engaging UI**: Animated SVG character and speech bubbles
 
 ## Tech Stack
 
-- **Frontend**: TypeScript + React (Next.js)
-- **Backend**: TypeScript (Next.js API routes)
-- **Styling**: TailwindCSS
-- **Animations**: Framer Motion
-- **Blockchain Data**: Multiple chain explorer APIs (Etherscan, Polygonscan, Arbiscan, etc.)
-- **AI Integration**: Anura API (Lilypad Network)
+- **Frontend**: Next.js (TypeScript/React)
+- **Styling**: TailwindCSS + Framer Motion
+- **Data**: Blockchain explorer APIs (Etherscan, etc.)
+- **AI**: Anura API (Lilypad Network)
 
 ## How It Works
 
-1. **Wallet Input**: User enters their wallet address
-2. **Multi-Chain Data Fetching**: App fetches transactions from multiple blockchain explorer APIs
-3. **Data Processing**: Transactions are summarized into a structured format
-4. **AI Roast Generation**: Transaction summary is sent to Anura API for roast generation
-5. **Display**: Sir Croaksworth delivers the roast in an animated speech bubble
-6. **Social Sharing**: User can share the roast on Twitter tagging @lilypad_tech #Roasted
+1. User enters wallet address
+2. App fetches blockchain data from multiple networks
+3. Transactions are summarized and processed
+4. Anura API generates a personalized roast
+5. Sir Croaksworth delivers the roast in a speech bubble
+6. User can share the roast on Twitter
 
 ## Project Structure
 
@@ -71,119 +69,70 @@ Sir Croaksworth's Roast DApp is a humorous web application that roasts users' cr
 
 ### Installation
 
-1. Clone the repository:
+1. Clone and install dependencies:
    ```bash
    git clone https://github.com/JAlbertCode/roast-app.git
    cd roast-app
-   ```
-
-2. Install dependencies:
-   ```bash
    npm install
-   # or
-   yarn
    ```
 
-3. Create a `.env.local` file in the project root with your API keys (you can copy from the provided `.env.example` file):
+2. Create `.env.local` with your API keys:
    ```
    ANURA_API_KEY=your_key_here
-   
-   # Required blockchain API keys
    NEXT_PUBLIC_ETHERSCAN_API_KEY=your_key_here
-   
-   # Optional blockchain API keys
-   NEXT_PUBLIC_POLYGONSCAN_API_KEY=optional
-   NEXT_PUBLIC_ARBISCAN_API_KEY=optional
-   NEXT_PUBLIC_OPTIMISM_API_KEY=optional
-   NEXT_PUBLIC_BASESCAN_API_KEY=optional
-   NEXT_PUBLIC_FTMSCAN_API_KEY=optional
-   NEXT_PUBLIC_BSCSCAN_API_KEY=optional
-   NEXT_PUBLIC_CRONOSCAN_API_KEY=optional
+   # Optional: NEXT_PUBLIC_POLYGONSCAN_API_KEY, etc.
    ```
 
-4. Start the development server:
+3. Start the development server:
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
-
-5. Open http://localhost:3000 in your browser
 
 ### Deployment
 
-#### Vercel Deployment (Recommended)
+**Vercel (Recommended)**
+1. Import to Vercel and configure environment variables 
+2. **Important**: Set Serverless Function Timeout to 60+ seconds (requires Vercel Pro)
+   - Or modify code to use a faster model (see "Anura API Integration")
 
-1. Push your code to GitHub
-2. Import the project to Vercel
-3. Configure environment variables in Vercel dashboard
-4. **Important**: Configure the following in your Vercel deployment settings:
-   - Set the **Serverless Function Timeout** to at least 60 seconds to accommodate longer API response times (requires a Vercel Pro account)
-   - Alternatively, modify the code to use a faster model (see "Customizing the AI Model" section)
-
-#### Manual Deployment
-
-To deploy to other services:
-
+**Other Platforms**
 ```bash
 npm run build
-# or
-yarn build
 ```
-
-Deploy the resulting build using your preferred hosting service.
 
 ## Customization Guide
 
-Here are some ways you can repurpose this DApp for your own needs:
-
 ### 1. Change the Character
+- Create a new SVG in `app/components/icons/`
+- Update implementation in `SirCroaksworth.tsx`
+- Modify character description in Anura API prompt
 
-Replace Sir Croaksworth with your own character by:
-- Creating a new SVG component in the `app/components/icons/` directory
-- Updating the character implementation in `SirCroaksworth.tsx`
-- Modifying the character description in the prompt to Anura API
+### 2. Modify Data Sources
+- Update `app/utils/chains/config.ts` for different chains
+- Modify `blockchainService.ts` for different data structures
 
-### 2. Modify the Data Source
+### 3. Change AI Integration
+- Update `anuraService.ts` with preferred AI service/model
+- Try different available models (see "Anura API" section)
 
-The app currently uses multiple blockchain explorer APIs, but you can adapt it to use any data source:
-
-- Update `app/utils/chains/config.ts` to modify supported chains or add new ones
-- Modify the data processing logic in `blockchainService.ts` to handle different data structures
-- Update the prompt to Anura API to reference the new data
-
-### 3. Change the AI Integration
-
-You can replace or modify the Anura API integration:
-
-- Update `anuraService.ts` to use your preferred AI service or model
-- Try different available models (see "Anura API Integration" section below)
-- Adjust the prompt format to match the requirements of your chosen API
-- Update API key handling in the environment variables
-
-### 4. Customize the UI/UX
-
-- Modify the TailwindCSS theme in `tailwind.config.js`
-- Update animations in Framer Motion components
-- Redesign the speech bubble in `SpeechBubble.tsx`
-- Change the sharing functionality in `ShareButton.tsx`
+### 4. Customize UI/UX
+- Modify TailwindCSS theme and Framer Motion animations
+- Redesign speech bubble and sharing functionality
 
 ## Alternative DApp Ideas
 
-Here are some ideas for repurposing this codebase:
-
-1. **NFT Personality Analyzer**: Analyze a user's NFT collection and generate a personality profile
-2. **Crypto Trading Coach**: Review trading history and provide personalized trading advice
-3. **DeFi Strategy Recommender**: Analyze wallet activity and suggest optimal DeFi strategies
-4. **Web3 Horoscope**: Generate humorous "horoscopes" based on on-chain activity
-5. **Smart Contract Auditor**: Simplified interface for basic smart contract security checks with AI feedback
+1. **NFT Personality Analyzer**: Generate personality profiles from NFT collections
+2. **Crypto Trading Coach**: Provide personalized trading advice based on history
+3. **DeFi Strategy Recommender**: Suggest optimal DeFi strategies 
+4. **Web3 Horoscope**: Generate horoscopes based on on-chain activity
+5. **Smart Contract Auditor**: Quick security checks with AI feedback
 
 ## Anura API Integration
 
-The DApp uses Anura, Lilypad Network's official AI inference API, for generating roasts. Here's how the integration works:
+The DApp uses Anura, Lilypad Network's official AI inference API. Here's a simplified example:
 
 ```typescript
-// Example API call to Anura (simplified version for demonstration)
+// Example API call (simplified)
 const getRoast = async (transactionSummary: object) => {
   const response = await fetch("https://anura-testnet.lilypad.tech/api/v1/chat/completions", {
     method: "POST",
@@ -204,9 +153,7 @@ const getRoast = async (transactionSummary: object) => {
         }
       ],
       "stream": false,
-      "options": {
-        "temperature": 1.0
-      }
+      "options": { "temperature": 1.0 }
     })
   });
 
@@ -215,23 +162,29 @@ const getRoast = async (transactionSummary: object) => {
 };
 ```
 
-**Note**: The actual implementation includes more complex handling for streaming responses, error handling, and fallback mechanisms that aren't shown in this simplified example.
+**Available Models:**
+- `deepseek-r1:7b` - Default model
+- `deepscaler:1.5b` - Faster, smaller model (recommended for timeout issues)
+- `llama3.1:8b`, `phi4:14b`, `mistral:7b`, `openthinker:7b`, `llava:7b`
 
-The application uses `deepseek-r1:7b` model by default, but several other models are available:
-- `deepscaler:1.5b` - Much smaller/faster model (recommended if you hit timeout issues)
-- `llama3.1:8b` - Balanced performance with high quality
-- `phi4:14b` - Larger model with potentially better roast quality
-- `mistral:7b` - Alternative model with different response style
-- `openthinker:7b` - Alternative model with different characteristics
-- `llava:7b` - Another option with unique response patterns
+Check available models: `curl GET "https://anura-testnet.lilypad.tech/api/v1/models"`
 
-You can check which models are available by calling the API endpoint:
+## Working with AI Assistants
 
-```bash
-curl GET "https://anura-testnet.lilypad.tech/api/v1/models" \
--H "Content-Type: application/json" \
--H "Authorization: Bearer YOUR_API_KEY"
-```
+This project is designed to be AI-assistant friendly. Here are tips for using tools like Claude, ChatGPT, or GitHub Copilot:
+
+### Effective Prompting
+
+1. **Provide Context**: Share relevant code snippets when asking for modifications
+2. **Specify File Paths**: Always mention exact locations (`app/utils/anuraService.ts`)
+3. **One Task at a Time**: Break down customization into smaller tasks
+
+### Project-Specific Tips
+
+- **API Integration**: Share the existing code and [Lilypad API docs](https://docs.lilypad.tech/lilypad/developer-resources/inference-api)
+- **Character Customization**: Show both `SirCroaksworth.tsx` and the SVG implementation
+- **Blockchain Integration**: Share `chains/config.ts` when modifying chains
+- **Styling**: Include examples of current styling when requesting changes
 
 ## License
 
